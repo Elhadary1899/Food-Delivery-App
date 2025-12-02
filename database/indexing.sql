@@ -10,7 +10,7 @@ CREATE INDEX idx_users_role ON Users(role);           -- Filtering admins / user
    RESTAURANT INDEXES
    Used when browsing restaurants and filtering items
    ============================================ */
-CREATE INDEX idx_restaurant_name ON Restaurant(Name);  -- Fast restaurant lookup by name
+CREATE INDEX idx_restaurant_name ON Restaurant(RestaurantName);  -- Fast restaurant lookup by name
 
 /* ============================================
    FOOD CATEGORY INDEXES

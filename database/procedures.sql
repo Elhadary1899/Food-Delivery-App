@@ -93,7 +93,7 @@ BEGIN
     WHERE username = p_username
       AND password = p_password
       AND role = 'User';
-END$
+END$$
 
 CREATE PROCEDURE sp_AdminSignInByUsername(
     IN p_username VARCHAR(100),
@@ -105,7 +105,7 @@ BEGIN
     WHERE username = p_username
       AND password = p_password
       AND role = 'Admin';
-END$
+END$$
 
 DELIMITER ;
 
@@ -269,8 +269,8 @@ CREATE PROCEDURE sp_GetAllRestaurants()
 BEGIN
     SELECT 
         RestaurantName,
-        ImageURL,
-        Description
+        RestaurantRating,
+        ImageURL
     FROM Restaurant
     ORDER BY RestaurantName;
 END$$
@@ -280,12 +280,15 @@ CREATE PROCEDURE sp_GetCategoriesByRestaurant(
     IN p_restaurant_name VARCHAR(255)
 )
 BEGIN
-    SELECT fc.CategoryName, fc.ImageURL
-    FROM FoodCategory fc
-    INNER JOIN Restaurant r ON fc.RestaurantID = r.RestaurantID
+    SELECT DISTINCT
+        fc.CategoryName,
+        fc.ImageURL
+    FROM FoodItems f
+    JOIN FoodCategory fc ON f.CategoryID = fc.CategoryID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
     WHERE r.RestaurantName = p_restaurant_name
     ORDER BY fc.CategoryName;
-END$$
+END;
 
 -- Get all food items by restaurant name
 CREATE PROCEDURE sp_GetFoodItemsByRestaurant(
@@ -357,12 +360,73 @@ BEGIN
     ORDER BY f.ItemName;
 END$$
 
+DELIMITER $$
+
+CREATE PROCEDURE sp_GetItemDetails(
+    IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255)
+)
+BEGIN
+    SELECT 
+        f.ItemID,
+        f.ItemName,
+        f.ItemDescription,
+        f.Price,
+        f.ImageURL,
+        c.CategoryName,
+        r.RestaurantName,
+        COALESCE(AVG(rv.Rating), 0) AS avg_rating,
+        COUNT(rv.ReviewID) AS review_count
+    FROM FoodItems f
+    JOIN FoodCategory c ON f.CategoryID = c.CategoryID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    LEFT JOIN Reviews rv ON f.ItemID = rv.ItemID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name
+    GROUP BY f.ItemID;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_GetRecommendedItems(
+    IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255)
+)
+BEGIN
+    SELECT 
+        f.ItemID,
+        f.ItemName,
+        f.ItemDescription,
+        f.Price,
+        f.ImageURL,
+        c.CategoryName,
+        COALESCE(AVG(rv.Rating), 0) AS avg_rating,
+        COUNT(rv.ReviewID) AS review_count
+    FROM FoodItems f
+    JOIN FoodCategory c ON f.CategoryID = c.CategoryID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    LEFT JOIN Reviews rv ON f.ItemID = rv.ItemID
+    WHERE r.RestaurantName = p_restaurant_name
+      AND f.ItemName <> p_item_name
+    GROUP BY f.ItemID
+    ORDER BY avg_rating DESC, f.ItemName;
+
+END$$
+
+DELIMITER ;
+
 -- Search food items
-CREATE PROCEDURE sp_SearchFood(
+DELIMITER $$
+
+CREATE PROCEDURE sp_SearchFoodInRestaurant(
+    IN p_restaurant_name VARCHAR(255),
     IN p_search VARCHAR(100)
 )
 BEGIN
     SELECT 
+        f.ItemID,
         f.ItemName,
         f.ItemDescription,
         f.Price,
@@ -375,11 +439,13 @@ BEGIN
     LEFT JOIN FoodCategory c ON f.CategoryID = c.CategoryID
     LEFT JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
     LEFT JOIN Reviews rv ON f.ItemID = rv.ItemID
-    WHERE f.ItemName LIKE CONCAT('%', p_search, '%')
-       OR f.ItemDescription LIKE CONCAT('%', p_search, '%')
-       OR r.RestaurantName LIKE CONCAT('%', p_search, '%')
+    WHERE r.RestaurantName = p_restaurant_name
+      AND (
+          f.ItemName LIKE CONCAT('%', p_search, '%')
+          OR f.ItemDescription LIKE CONCAT('%', p_search, '%')
+      )
     GROUP BY f.ItemID, f.ItemName, f.ItemDescription, f.Price, f.ImageURL, c.CategoryName, r.RestaurantName
-    ORDER BY r.RestaurantName, f.ItemName;
+    ORDER BY f.ItemName;
 END$$
 
 DELIMITER ;
@@ -470,6 +536,7 @@ DELIMITER $$
 CREATE PROCEDURE sp_AddToCart(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255),
     IN p_quantity INT,
     IN p_size VARCHAR(50)
 )
@@ -479,7 +546,7 @@ BEGIN
     DECLARE v_price DECIMAL(10,2);
     DECLARE v_cart_item_id INT;
 
-    -- Get or create cart
+    -- Get or create user cart
     SELECT CartID INTO v_cart_id
     FROM Cart
     WHERE UserID = p_user_id
@@ -492,13 +559,16 @@ BEGIN
         SET v_cart_id = LAST_INSERT_ID();
     END IF;
 
-    -- Get item details
-    SELECT ItemID, Price INTO v_item_id, v_price 
-    FROM FoodItems 
-    WHERE ItemName = p_item_name 
+    -- Get the item inside the correct restaurant
+    SELECT f.ItemID, f.Price 
+    INTO v_item_id, v_price
+    FROM FoodItems f
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name
     LIMIT 1;
 
-    -- Check if item already in cart
+    -- Check if item already exists in cart with same size
     SELECT CartItemID INTO v_cart_item_id
     FROM CartItems
     WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size
@@ -508,17 +578,19 @@ BEGIN
         UPDATE CartItems
         SET Quantity = Quantity + p_quantity
         WHERE CartItemID = v_cart_item_id;
+
         SELECT 'Item quantity updated in cart' AS message;
+
     ELSE
         INSERT INTO CartItems (CartID, ItemID, Price, Quantity, Size)
         VALUES (v_cart_id, v_item_id, v_price, p_quantity, p_size);
+
         SELECT 'Item added to cart' AS message;
     END IF;
+
 END$$
 
-CREATE PROCEDURE sp_GetCartItems(
-    IN p_user_id INT
-)
+CREATE PROCEDURE sp_GetCartItems(IN p_user_id INT)
 BEGIN
     DECLARE v_cart_id INT;
 
@@ -529,11 +601,18 @@ BEGIN
     LIMIT 1;
 
     IF v_cart_id IS NOT NULL THEN
-        SELECT f.ItemName, f.ItemDescription, f.ImageURL,
-               ci.Quantity, ci.Price, ci.Size,
-               (ci.Quantity * ci.Price) AS subtotal
+        SELECT 
+            f.ItemName,
+            f.ItemDescription,
+            f.ImageURL,
+            r.RestaurantName,
+            ci.Quantity,
+            ci.Price,
+            ci.Size,
+            (ci.Quantity * ci.Price) AS subtotal
         FROM CartItems ci
         JOIN FoodItems f ON ci.ItemID = f.ItemID
+        JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
         WHERE ci.CartID = v_cart_id;
 
         SELECT COALESCE(SUM(Quantity * Price), 0) AS cart_total
@@ -544,9 +623,11 @@ BEGIN
     END IF;
 END$$
 
+
 CREATE PROCEDURE sp_UpdateCartQuantity(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255),
     IN p_size VARCHAR(50),
     IN p_quantity INT
 )
@@ -560,19 +641,24 @@ BEGIN
     ORDER BY Cart_date DESC
     LIMIT 1;
 
-    SELECT ItemID INTO v_item_id
-    FROM FoodItems
-    WHERE ItemName = p_item_name
+    -- Identify correct restaurant item
+    SELECT f.ItemID INTO v_item_id
+    FROM FoodItems f
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name
     LIMIT 1;
 
     IF p_quantity > 0 THEN
         UPDATE CartItems
         SET Quantity = p_quantity
         WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
+
         SELECT 'Cart quantity updated' AS message;
     ELSE
-        DELETE FROM CartItems 
+        DELETE FROM CartItems
         WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
+
         SELECT 'Item removed from cart' AS message;
     END IF;
 END$$
@@ -580,6 +666,7 @@ END$$
 CREATE PROCEDURE sp_RemoveFromCart(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255),
     IN p_size VARCHAR(50)
 )
 BEGIN
@@ -592,14 +679,16 @@ BEGIN
     ORDER BY Cart_date DESC
     LIMIT 1;
 
-    SELECT ItemID INTO v_item_id
-    FROM FoodItems
-    WHERE ItemName = p_item_name
+    SELECT f.ItemID INTO v_item_id
+    FROM FoodItems f
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name
     LIMIT 1;
 
-    DELETE FROM CartItems 
+    DELETE FROM CartItems
     WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
-    
+
     SELECT 'Item removed from cart' AS message;
 END$$
 
@@ -804,15 +893,18 @@ DELIMITER $$
 CREATE PROCEDURE sp_AddReview(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255),
     IN p_rating INT,
     IN p_review TEXT
 )
 BEGIN
     DECLARE v_item_id INT;
 
-    SELECT ItemID INTO v_item_id
-    FROM FoodItems
-    WHERE ItemName = p_item_name
+    SELECT f.ItemID INTO v_item_id
+    FROM FoodItems f
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name
     LIMIT 1;
 
     INSERT INTO Reviews (UserID, ItemID, Rating, Review)
@@ -822,63 +914,77 @@ BEGIN
 END$$
 
 CREATE PROCEDURE sp_GetItemReviewsByName(
-    IN p_item_name VARCHAR(150)
+    IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255)
 )
 BEGIN
     SELECT 
         u.username,
         f.ItemName,
-        r.Rating,
-        r.Review
-    FROM Reviews r
-    JOIN Users u ON r.UserID = u.UserID
-    JOIN FoodItems f ON r.ItemID = f.ItemID
+        r2.RestaurantName,
+        rv.Rating,
+        rv.Review
+    FROM Reviews rv
+    JOIN FoodItems f ON rv.ItemID = f.ItemID
+    JOIN Restaurant r2 ON f.RestaurantID = r2.RestaurantID
+    JOIN Users u ON rv.UserID = u.UserID
     WHERE f.ItemName = p_item_name
-    ORDER BY r.ReviewID DESC;
+      AND r2.RestaurantName = p_restaurant_name
+    ORDER BY rv.ReviewID DESC;
 END$$
 
 CREATE PROCEDURE sp_GetAverageRatingByName(
-    IN p_item_name VARCHAR(150)
+    IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255)
 )
 BEGIN
     SELECT 
-        COALESCE(AVG(r.Rating), 0) AS avg_rating,
-        COUNT(r.ReviewID) AS review_count
-    FROM Reviews r
-    JOIN FoodItems f ON r.ItemID = f.ItemID
-    WHERE f.ItemName = p_item_name;
+        COALESCE(AVG(rv.Rating), 0) AS avg_rating,
+        COUNT(rv.ReviewID) AS review_count
+    FROM Reviews rv
+    JOIN FoodItems f ON rv.ItemID = f.ItemID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name;
 END$$
 
 CREATE PROCEDURE sp_UpdateReviewByUserAndItem(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255),
     IN p_rating INT,
     IN p_review TEXT
 )
 BEGIN
-    UPDATE Reviews r
-    JOIN FoodItems f ON r.ItemID = f.ItemID
-    SET r.Rating = p_rating,
-        r.Review = p_review
-    WHERE r.UserID = p_user_id
-      AND f.ItemName = p_item_name;
+    UPDATE Reviews rv
+    JOIN FoodItems f ON rv.ItemID = f.ItemID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    SET rv.Rating = p_rating,
+        rv.Review = p_review
+    WHERE rv.UserID = p_user_id
+      AND f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name;
 
     SELECT 'Review updated successfully' AS message;
 END$$
 
 CREATE PROCEDURE sp_DeleteReviewByUserAndItem(
     IN p_user_id INT,
-    IN p_item_name VARCHAR(150)
+    IN p_item_name VARCHAR(150),
+    IN p_restaurant_name VARCHAR(255)
 )
 BEGIN
-    DELETE r
-    FROM Reviews r
-    JOIN FoodItems f ON r.ItemID = f.ItemID
-    WHERE r.UserID = p_user_id
-      AND f.ItemName = p_item_name;
+    DELETE rv
+    FROM Reviews rv
+    JOIN FoodItems f ON rv.ItemID = f.ItemID
+    JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
+    WHERE rv.UserID = p_user_id
+      AND f.ItemName = p_item_name
+      AND r.RestaurantName = p_restaurant_name;
 
     SELECT 'Review deleted successfully' AS message;
 END$$
+
 
 CREATE PROCEDURE sp_GetUserReviewsWithDetails(
     IN p_user_id INT

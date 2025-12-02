@@ -1,6 +1,6 @@
 -- Create database and use it
 CREATE DATABASE IF NOT EXISTS food_delivery_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE foodproject2;
+USE food_delivery_app;
 
 -- =================================================
 -- TABLES
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Users (
     password VARCHAR(200) NOT NULL,
     marketing_opt BOOLEAN DEFAULT TRUE,
     role VARCHAR(10) DEFAULT 'User',
-    CHECK (email LIKE '%@google.com'),
+    CHECK (email LIKE '%@gmail.com'),
     CHECK(role IN ('User','Admin'))
 );
 
@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS FoodCategory (
 CREATE TABLE IF NOT EXISTS Restaurant (
     RestaurantID INT AUTO_INCREMENT PRIMARY KEY,
     RestaurantName VARCHAR(200) NOT NULL,
+    RestaurantRating DECIMAL(2,1) NOT NULL DEFAULT 0.0,
     Address VARCHAR(200),
     imageURL VARCHAR(255)
 );

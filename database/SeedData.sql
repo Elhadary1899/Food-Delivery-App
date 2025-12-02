@@ -50,14 +50,14 @@ CREATE TRIGGER trg_payment_before_insert
 BEFORE INSERT ON Payment
 FOR EACH ROW
 BEGIN
-    -- If payment is Cash, clear all card fields
+    --  If payment is Cash, clear all card fields
     IF NEW.PaymentMethod = 'Cash' THEN
         SET NEW.CardholderName = NULL;
         SET NEW.CardNumber = NULL;
         SET NEW.ExpirationDate = NULL;
         SET NEW.CVC = NULL;
     ELSE
-        -- For Credit/Debit, ensure card details are provided
+        --  For Credit/Debit, ensure card details are provided
         IF NEW.CardholderName IS NULL
            OR NEW.CardNumber IS NULL
            OR NEW.ExpirationDate IS NULL
@@ -93,7 +93,7 @@ VALUES
 (19, 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
 (20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
 
---FoodCategory
+-- FoodCategory
 INSERT INTO FoodCategory (CategoryName, ImageURL)
 VALUES
 ('Burger', 'frontend/resources/pngtree-burger-and-fries-ai-generated-png-image_14563042.png'),
@@ -103,16 +103,17 @@ VALUES
 ('Dessert', 'frontend/resources/Elemento-3-D-Bolo-no-Prato-PNG-Transparente-removebg-preview.png'),
 ('Sushi','frontend/resources/download-49-removebg-preview.png');
 
---Restaurant
-INSERT INTO Restaurant (RestaurantName, Address, imageURL)
+-- Restaurant
+INSERT INTO Restaurant (RestaurantName, RestaurantRating, Address, imageURL)
 VALUES
-('Holmes', '12 Garden Street, Cairo', 'frontend/resources/Screenshot%202025-12-02%20170053.png?raw=true'),
-('Pizza Hut', '45 Nile Avenue, Giza', 'frontend/resources/pizza.jpg'),
-("Little E's", '10 Freedom Road, Cairo', 'frontend/resources/little.jpg'),
-('5 Roosters', '19 Lotus Compound, Cairo', 'frontend/resources/5%20roosters.jpg'),
-('Coff', '9 Lotus Compound, Cairo', 'frontend/resources/coff.jpg?raw=true'),
-('The Wok Restaurant', '88 Tahrir Square, Giza', 'https://ibb.co/mrTqphqq');
---FoodItems
+('Holmes', 4.5, '12 Garden Street, Cairo', 'frontend/resources/Screenshot%202025-12-02%20170053.png?raw=true'),
+('Pizza Hut', 4.7, '45 Nile Avenue, Giza', 'frontend/resources/pizza.jpg'),
+("Little E's", 4.3, '10 Freedom Road, Cairo', 'frontend/resources/little.jpg'),
+('5 Roosters', 4.6, '19 Lotus Compound, Cairo', 'frontend/resources/5%20roosters.jpg'),
+('Coff', 4.2, '9 Lotus Compound, Cairo', 'frontend/resources/coff.jpg?raw=true'),
+('The Wok Restaurant', 4.4, '88 Tahrir Square, Giza', 'https://ibb.co/mrTqphqq');
+
+-- FoodItems
 INSERT INTO FoodItems (CategoryID, RestaurantID, ItemName, ItemDescription, Price, imageURL)
 VALUES
 (1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00, 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
@@ -122,7 +123,7 @@ VALUES
 (5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00, 'frontend/resources/22g242_1200x1200.webp'),
 (6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
 
---Orders
+-- Orders
 INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID)
 VALUES
 (1, '2025-02-01 14:30:00', 220.00, 15.00, 1, 1),
@@ -145,30 +146,30 @@ VALUES
 (18, '2025-10-05 10:40:00', 40.00, 10.00, 18, 18),
 (19, '2025-11-03 20:10:00', 167.00, 12.00, 19, 19),
 (20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20);
---OrderItems
+-- OrderItems
 INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price)
 VALUES
--- Order 1 (items 1 + 2)
+--  Order 1 (items 1 + 2)
 (1, 1, 1, 85.00),
 (1, 2, 1, 120.00),
 
--- Order 2 (item 2)
+--  Order 2 (item 2)
 (2, 2, 1, 120.00),
 
--- Order 3 (items 3 + 4)
+--  Order 3 (items 3 + 4)
 (3, 3, 1, 180.00),
 (3, 4, 1, 95.00),
 
--- Order 4 (item 4)
+--  Order 4 (item 4)
 (4, 4, 1, 95.00),
 
--- Order 5 (items 5 + 6)
+--  Order 5 (items 5 + 6)
 (5, 5, 1, 60.00),
 (5, 6, 1, 140.00),
 
--- Order 6 (item 6)
+--  Order 6 (item 6)
 (6, 6, 1, 140.00);
---Reviews
+-- Reviews
 INSERT INTO Reviews (UserID, ItemID, Rating, Review)
 VALUES
 (1, 1, 5, 'Excellent burger — juicy and well seasoned.'),
@@ -177,7 +178,8 @@ VALUES
 (4, 4, 4, 'Chicken was crispy but a little salty.'),
 (5, 5, 5, 'Lava cake was gooey and perfect.'),
 (6, 6, 5, 'Fresh salmon rolls, well balanced.');
---Cart
+
+-- Cart
 INSERT INTO Cart (UserID, Cart_date)
 VALUES
 (1, '2025-11-25'),
@@ -200,7 +202,7 @@ VALUES
 (18,'2025-11-30'),
 (19,'2025-11-30'),
 (20,'2025-11-30');
---CartItems
+-- CartItems
 INSERT INTO CartItems (CartID, ItemID, Price, Quantity, Size)
 VALUES
 (1, 1, 85.00, 1, 'Regular'),
