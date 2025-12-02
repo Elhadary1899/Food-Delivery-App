@@ -1,5 +1,5 @@
 -- Create database and use it
-CREATE DATABASE IF NOT EXISTS foodproject2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS food_delivery_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE foodproject2;
 
 -- =================================================
