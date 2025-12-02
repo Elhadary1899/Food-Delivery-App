@@ -43,3 +43,52 @@ VALUES
 (18,'44 Ocean Drive', '11470', 'Cairo', 'Egypt'),
 (19,'7 Maple Town', '11360', 'Giza', 'Egypt'),
 (20,'11 Silver Heights', '11380', 'Cairo', 'Egypt');
+
+DELIMITER $$
+
+CREATE TRIGGER trg_payment_before_insert
+BEFORE INSERT ON Payment
+FOR EACH ROW
+BEGIN
+    -- If payment is Cash, clear all card fields
+    IF NEW.PaymentMethod = 'Cash' THEN
+        SET NEW.CardholderName = NULL;
+        SET NEW.CardNumber = NULL;
+        SET NEW.ExpirationDate = NULL;
+        SET NEW.CVC = NULL;
+    ELSE
+        -- For Credit/Debit, ensure card details are provided
+        IF NEW.CardholderName IS NULL
+           OR NEW.CardNumber IS NULL
+           OR NEW.ExpirationDate IS NULL
+           OR NEW.CVC IS NULL THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Card details are required for non-cash payment methods';
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
+INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+VALUES
+(1, 'Cash', NULL, NULL, NULL, NULL),
+(2, 'Cash', NULL, NULL, NULL, NULL),
+(3, 'Cash', NULL, NULL, NULL, NULL),
+(4, 'Cash', NULL, NULL, NULL, NULL),
+(5, 'Cash', NULL, NULL, NULL, NULL),
+(6, 'Cash', NULL, NULL, NULL, NULL),
+(7, 'Cash', NULL, NULL, NULL, NULL),
+(8, 'Cash', NULL, NULL, NULL, NULL),
+(9, 'Cash', NULL, NULL, NULL, NULL),
+(10, 'Cash', NULL, NULL, NULL, NULL),
+
+(11, 'Credit', 'John Smith', '4111111111111111', '2027-08-01', '123'),
+(12, 'Debit', 'David Jackson', '5500000000000004', '2026-11-01', '456'),
+(13, 'Credit', 'Emily Clark', '4007000000027', '2028-02-01', '789'),
+(14, 'Credit', 'Jennifer Brown', '6011000990139424', '2026-06-01', '321'),
+(15, 'Debit', 'Youssef Fathy', '3530111333300000', '2027-09-01', '654'),
+(16, 'Credit', 'Mariam Gamal', '4000056655665556', '2029-03-01', '987'),
+(17, 'Debit', 'Alaa Ismail', '5105105105105100', '2026-12-01', '147'),
+(18, 'Credit', 'Habiba Adel', '4111111111111129', '2028-07-01', '258'),
+(19, 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
+(20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
