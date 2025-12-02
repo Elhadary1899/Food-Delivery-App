@@ -1,50 +1,61 @@
 const db = require("../utils/db");
 
-// 1️⃣ Item details
-exports.getItemDetails = async (itemId) => {
-    const [result] = await db.query(`CALL sp_GetFoodItemById(?)`, [itemId]);
+function normalize(result) {
+    return Array.isArray(result[0]) ? result[0] : result;
+}
 
-    // procedure returns 2 result sets; head is result[0]
-    const details = result[0][0];
-    if (!details) return null;
+exports.getItemDetails = async (itemName, restaurantName) => {
+    const [result] = await db.query(
+        `CALL sp_GetItemDetails(?, ?)`,
+        [itemName, restaurantName]
+    );
 
-    return {
-        item_id: details.ItemID,
-        name: details.ItemName,
-        description: details.ItemDescription,
-        price: details.Price,
-        category_id: details.CategoryID,
-        category_name: details.CategoryName,
-        image_url: details.ImageURL,
-        avg_rating: details.avg_rating,
-        review_count: details.review_count,
-        restaurant_id: details.RestaurantID
-    };
+    const rows = Array.isArray(result[0]) ? result[0] : result;
+    return rows[0] || null;
 };
 
-// 2️⃣ Item reviews
-exports.getItemReviews = async (itemId) => {
-    const [rows] = await db.query(`CALL sp_GetItemReviews(?)`, [itemId]);
-    return rows[0];
-};
 
-// 3️⃣ People also order
-exports.getPeopleAlsoOrder = async (restaurantId, itemId) => {
-    const [rows] = await db.query(`
+exports.getItemReviews = async (itemName, restaurantName) => {
+    const [rows] = await db.query(
+        `
         SELECT 
-            f.ItemID,
-            f.ItemName,
-            f.ItemDescription,
-            f.Price,
-            NULL AS image_url,
-            COALESCE(AVG(r.Rating),0) AS avg_rating
-        FROM FoodItems f
-        LEFT JOIN Reviews r ON f.ItemID = r.ItemID
-        WHERE f.RestaurantID = ? AND f.ItemID != ?
-        GROUP BY f.ItemID
-        ORDER BY avg_rating DESC
-        LIMIT 6
-    `, [restaurantId, itemId]);
-
+            u.username,
+            r.Rating,
+            r.Review
+        FROM Reviews r
+        JOIN Users u ON r.UserID = u.UserID
+        JOIN FoodItems f ON r.ItemID = f.ItemID
+        JOIN Restaurant res ON f.RestaurantID = res.RestaurantID
+        WHERE f.ItemName = ?
+          AND res.RestaurantName = ?
+        ORDER BY r.ReviewID DESC
+        `,
+        [itemName, restaurantName]
+    );
     return rows;
 };
+
+// ===================================================
+// GET RECOMMENDATIONS FROM THE SAME RESTAURANT
+// ===================================================
+exports.getRecommendedItems = async (itemName, restaurantName) => {
+    const [callResult] = await db.query(
+        `CALL sp_GetRecommendedItems(?, ?)`,
+        [itemName, restaurantName]
+    );
+
+    const rows = Array.isArray(callResult[0]) ? callResult[0] : callResult;
+
+    return rows.map(i => ({
+        item_id: i.ItemID,
+        item_name: i.ItemName,
+        description: i.ItemDescription,
+        price: i.Price,
+        image_url: i.ImageURL,
+        category_name: i.CategoryName,
+        avg_rating: i.avg_rating,
+        review_count: i.review_count
+    }));
+};
+
+

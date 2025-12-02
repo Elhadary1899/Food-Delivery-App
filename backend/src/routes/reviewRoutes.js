@@ -2,12 +2,10 @@ const express = require("express");
 const router = express.Router();
 const reviewController = require("../controllers/reviewController");
 
-// TEMP route so Express doesn't crash
-router.get("/", (req, res) => {
-    res.json({ message: "Reviews endpoint OK" });
-});
-
 // Add review
-router.post("/", reviewController.addReview);
+router.post("/add", reviewController.addReview);
+
+// Get reviews for item in a specific restaurant
+router.get("/:restaurantName/:itemName", reviewController.getItemReviews);
 
 module.exports = router;

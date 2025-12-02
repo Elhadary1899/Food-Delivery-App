@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const itemController = require("../controllers/itemController");
 
-// Get item details + reviews + suggestions
-router.get("/:id", itemController.getItemDetails);
+// Recommendations
+router.get("/:restaurantName/:itemName/recommendations", itemController.getRecommendations);
+
+// Item page
+router.get("/:restaurantName/:itemName", itemController.getItemPageData);
 
 module.exports = router;

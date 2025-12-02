@@ -1,142 +1,125 @@
 const db = require("../utils/db");
 
-// ===================================================
-// GET ALL RESTAURANTS (with pagination)
-// ===================================================
-exports.getRestaurants = async (offset, limit) => {
-    const [rows] = await db.query(
-        `
-        SELECT 
-            r.RestaurantID AS restaurant_id,
-            r.Name,
-            r.Address,
-            r.imageURL AS image_url,
-            COALESCE(AVG(rv.Rating), 0) AS rating
-        FROM Restaurant r
-        LEFT JOIN FoodItems fi ON fi.RestaurantID = r.RestaurantID
-        LEFT JOIN Reviews rv ON rv.ItemID = fi.ItemID
-        GROUP BY r.RestaurantID
-        ORDER BY rating DESC, r.Name
-        LIMIT ? OFFSET ?
-        `,
-        [limit, offset]
-    );
+// Normalize CALL output
+function normalize(result) {
+    if (!Array.isArray(result)) return result;
+    return Array.isArray(result[0]) ? result[0] : result;
+}
 
-    return rows;
+// ===================================================
+// GET ALL RESTAURANTS
+// ===================================================
+exports.getRestaurants = async () => {
+    const [result] = await db.query(`CALL sp_GetAllRestaurants()`);
+
+    return result[0].map(r => ({
+        restaurant_name: r.RestaurantName,
+        rating: r.RestaurantRating,
+        image_url: r.ImageURL
+    }));
 };
 
 // ===================================================
-// SEARCH RESTAURANTS
+// SEARCH RESTAURANTS BY NAME
 // ===================================================
 exports.searchRestaurants = async (keyword) => {
     const [rows] = await db.query(
         `
-        SELECT 
-            RestaurantID AS restaurant_id,
-            Name,
-            Address,
-            imageURL AS image_url
+        SELECT RestaurantName, RestaurantRating, imageURL AS ImageURL
         FROM Restaurant
-        WHERE Name LIKE CONCAT('%', ?, '%')
-        ORDER BY Name
+        WHERE RestaurantName LIKE CONCAT('%', ?, '%')
+        ORDER BY RestaurantName
         `,
         [keyword]
     );
 
-    return rows;
+    return rows.map(r => ({
+        restaurant_name: r.RestaurantName,
+        rating: r.RestaurantRating,
+        image_url: r.ImageURL || null
+    }));
 };
 
 // ===================================================
 // GET MENU FOR A SPECIFIC RESTAURANT
 // ===================================================
-exports.getRestaurantMenu = async (restaurantId) => {
+function normalize(result) {
+    if (!Array.isArray(result)) return result;
+    return Array.isArray(result[0]) ? result[0] : result;
+}
 
-    // GET RESTAURANT BASIC INFO + RATING
-    const [[restaurant]] = await db.query(
-        `
-        SELECT 
-            r.RestaurantID AS id,
-            r.Name,
-            r.Address,
-            r.imageURL AS image_url,
-            COALESCE(AVG(rv.Rating), 0) AS rating
-        FROM Restaurant r
-        LEFT JOIN FoodItems fi ON fi.RestaurantID = r.RestaurantID
-        LEFT JOIN Reviews rv ON rv.ItemID = fi.ItemID
-        WHERE r.RestaurantID = ?
-        GROUP BY r.RestaurantID
-        `,
-        [restaurantId]
+exports.getRestaurantMenu = async (restaurantName) => {
+    const decodedName = decodeURIComponent(restaurantName);
+
+    // Fetch categories
+    const [catResult] = await db.query(
+        `CALL sp_GetCategoriesByRestaurant(?)`,
+        [decodedName]
     );
 
-    if (!restaurant) {
-        return null; // controller will handle this
-    }
+    // Normalize CALL output
+    const categoriesRaw =
+        Array.isArray(catResult) && Array.isArray(catResult[0])
+            ? catResult[0]
+            : catResult;
 
-    // GET ONLY CATEGORIES THIS RESTAURANT USES
-    const [categories] = await db.query(
-        `
-        SELECT DISTINCT
-            c.CategoryID,
-            c.CategoryName,
-            c.ImageURL
-        FROM FoodCategory c
-        JOIN FoodItems f ON f.CategoryID = c.CategoryID
-        WHERE f.RestaurantID = ?
-        ORDER BY c.CategoryName
-        `,
-        [restaurantId]
+    // Build category objects with empty items arrays
+    const categories = categoriesRaw.map(c => ({
+        category_name: c.CategoryName,
+        image_url: c.ImageURL,
+        items: []
+    }));
+
+    // Fetch items
+    const [itemResult] = await db.query(
+        `CALL sp_GetFoodItemsByRestaurant(?)`,
+        [decodedName]
     );
 
-    // GET ALL ITEMS IN THIS RESTAURANT
-    const [items] = await db.query(
-        `
-        SELECT 
-            f.ItemID,
-            f.ItemName,
-            f.ItemDescription,
-            f.Price,
-            f.CategoryID,
-            c.CategoryName,
-            c.ImageURL,
-            COALESCE(AVG(r.Rating), 0) AS avg_rating,
-            COUNT(r.ReviewID) AS review_count
-        FROM FoodItems f
-        JOIN FoodCategory c ON c.CategoryID = f.CategoryID
-        LEFT JOIN Reviews r ON r.ItemID = f.ItemID
-        WHERE f.RestaurantID = ?
-        GROUP BY f.ItemID
-        ORDER BY f.ItemName
-        `,
-        [restaurantId]
-    );
+    const itemsRaw =
+        Array.isArray(itemResult) && Array.isArray(itemResult[0])
+            ? itemResult[0]
+            : itemResult;
 
-    return { restaurant, categories, items };
+    // Assign items to their categories
+    itemsRaw.forEach(item => {
+        const category = categories.find(c => c.category_name === item.CategoryName);
+        if (category) {
+            category.items.push({
+                item_name: item.ItemName,
+                description: item.ItemDescription,
+                price: item.Price,
+                image_url: item.ImageURL,
+                avg_rating: item.avg_rating,
+                review_count: item.review_count
+            });
+        }
+    });
+
+    return { categories };
 };
 
 // ===================================================
-// SEARCH Items within Restaurant
+// SEARCH ITEMS INSIDE A RESTAURANT
 // ===================================================
-exports.searchRestaurantItems = async (restaurantId, keyword) => {
-    const [rows] = await db.query(
-        `
-        SELECT 
-            f.ItemID,
-            f.ItemName,
-            f.ItemDescription,
-            f.Price,
-            f.CategoryID,
-            c.CategoryName
-        FROM FoodItems f
-        JOIN FoodCategory c ON f.CategoryID = c.CategoryID
-        WHERE f.RestaurantID = ?
-          AND (f.ItemName LIKE CONCAT('%', ?, '%')
-               OR f.ItemDescription LIKE CONCAT('%', ?, '%'))
-        ORDER BY f.ItemName
-        `,
-        [restaurantId, keyword, keyword]
+exports.searchRestaurantItems = async (restaurantName, keyword) => {
+    const decodedName = decodeURIComponent(restaurantName);
+
+    const [result] = await db.query(
+        `CALL sp_SearchFoodInRestaurant(?, ?)`,
+        [decodedName, keyword]
     );
 
-    return rows;
-};
+    const rows = normalize(result);
 
+    return rows.map(i => ({
+        item_id: i.ItemID,
+        item_name: i.ItemName,
+        description: i.ItemDescription,
+        price: i.Price,
+        image_url: i.ImageURL,
+        category_name: i.CategoryName,
+        avg_rating: i.avg_rating,
+        review_count: i.review_count
+    }));
+};
