@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS Payment (
     PaymentMethod VARCHAR(50) NOT NULL,  -- Cash, Debit or Credit
     CardholderName VARCHAR(100),
     CardNumber VARCHAR(30),
-    ExpirationDate VARCHAR(10),
+    ExpirationDate DATE,
     CVC VARCHAR(10),
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
