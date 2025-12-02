@@ -98,6 +98,14 @@ VALUES
 --Restaurant
 
 --FoodItems
+INSERT INTO FoodItems (CategoryID, RestaurantID, ItemName, ItemDescription, Price, imageURL)
+VALUES
+(1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00, 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
+(2, 2, 'Pepperoni Pizza', 'Tomato, mozzarella, basil', 120.00, 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
+(3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00, 'frontend/resources/mix grill.jpg'),
+(4, 4, 'fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00, 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
+(5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00, 'frontend/resources/22g242_1200x1200.webp'),
+(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
 
 --Orders
 INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID)
