@@ -94,6 +94,14 @@ VALUES
 (20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
 
 --FoodCategory
+INSERT INTO FoodCategory (CategoryName, ImageURL)
+VALUES
+('Burger', 'frontend/resources/pngtree-burger-and-fries-ai-generated-png-image_14563042.png'),
+('Pizza', 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
+('Meat Grill', 'frontend/resources/photo_2025-12-02_16-43-35.jpg'),
+('Fried Chicken', 'frontend/resources/fried chicken category.jpg'),
+('Dessert', 'frontend/resources/Elemento-3-D-Bolo-no-Prato-PNG-Transparente-removebg-preview.png'),
+('Sushi','frontend/resources/download-49-removebg-preview.png');
 
 --Restaurant
 
