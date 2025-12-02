@@ -1,1 +1,22 @@
-
+INSERT  INTO Users (username, email, password, marketing_opt, role)
+VALUES
+('lara_whitley', 'lara.whitley@gmail.com', 'pass123', TRUE, 'User'),
+('omar_hassan', 'omar.hassan@gmail.com', 'pass123', TRUE, 'User'),
+('nourhan_hamada', 'nourhan.hamada@gmail.com', 'pass123', TRUE, 'Admin'),
+('ahmed_samir', 'ahmed.samir@gmail.com', 'pass123', TRUE, 'User'),
+('sara_khaled', 'sara.khaled@gmail.com', 'pass123', FALSE, 'User'),
+('mohamed_adel', 'mohamed.adel@gmail.com', 'pass123', TRUE, 'User'),
+('mira_soliman', 'mira.soliman@gmail.com', 'pass123', TRUE, 'User'),
+('hassan_ali', 'hassan.ali@gmail.com', 'pass123', TRUE, 'User'),
+('fatma_hussein', 'fatma.hussein@gmail.com', 'pass123', FALSE, 'User'),
+('john_smith', 'john.smith@gmail.com', 'pass123', TRUE, 'User'),
+('david_jackson', 'david.jackson@gmail.com', 'pass123', FALSE, 'User'),
+('emily_clark', 'emily.clark@gmail.com', 'pass123', TRUE, 'User'),
+('jennifer_brown', 'jennifer.brown@gmail.com', 'pass123', TRUE, 'User'),
+('youssef_fathy', 'youssef.fathy@gmail.com', 'pass123', TRUE, 'User'),
+('mariam_gamal', 'mariam.gamal@gmail.com', 'pass123', FALSE, 'User'),
+('alaa_ismail', 'alaa.ismail@gmail.com', 'pass123', TRUE, 'User'),
+('habiba_adel', 'habiba.adel@gmail.com', 'pass123', TRUE, 'User'),
+('tarek_mostafa', 'tarek.mostafa@gmail.com', 'pass123', TRUE, 'User'),
+('jana_samir', 'jana.samir@gmail.com', 'pass123', FALSE, 'User'),
+('kareem_rashad', 'kareem.rashad@gmail.com', 'pass123', TRUE, 'User');
