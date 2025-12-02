@@ -20,3 +20,26 @@ VALUES
 ('tarek_mostafa', 'tarek.mostafa@gmail.com', 'pass123', TRUE, 'User'),
 ('jana_samir', 'jana.samir@gmail.com', 'pass123', FALSE, 'User'),
 ('kareem_rashad', 'kareem.rashad@gmail.com', 'pass123', TRUE, 'User');
+
+INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
+VALUES
+(1, '12 Garden Street', '11511', 'Cairo', 'Egypt'),
+(2, '45 Nile Avenue', '11321', 'Giza', 'Egypt'),
+(3, '10 Freedom Road', '11765', 'Cairo', 'Egypt'),
+(4, '88 Tahrir Square', '11522', 'Giza', 'Egypt'),
+(5, '22 Palm Towers', '11330', 'Alexandria', 'Egypt'),
+(6, '9 Lotus Compound', '11444', 'Cairo', 'Egypt'),
+(7, '55 Horizon City', '11566', 'Cairo', 'Egypt'),
+(8, '19 Corniche Rd', '21111', 'Alexandria', 'Egypt'),
+(9, '77 Mountain View', '11355', 'Cairo', 'Egypt'),
+(10,'5 Green Park', '11499', 'Cairo', 'Egypt'),
+(11,'101 Lake View', '11821', 'Giza', 'Egypt'),
+(12,'4 Sunset Valley', '11402', 'Cairo', 'Egypt'),
+(13,'16 West Hills', '11378', 'Alexandria', 'Egypt'),
+(14,'88 Sunrise District', '11588', 'Cairo', 'Egypt'),
+(15,'33 Blue River', '11900', 'Cairo', 'Egypt'),
+(16,'120 Island Road', '11392', 'Giza', 'Egypt'),
+(17,'6 Marina Bay', '21122', 'Alexandria', 'Egypt'),
+(18,'44 Ocean Drive', '11470', 'Cairo', 'Egypt'),
+(19,'7 Maple Town', '11360', 'Giza', 'Egypt'),
+(20,'11 Silver Heights', '11380', 'Cairo', 'Egypt');
