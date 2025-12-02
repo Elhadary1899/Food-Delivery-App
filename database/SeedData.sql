@@ -104,7 +104,14 @@ VALUES
 ('Sushi','frontend/resources/download-49-removebg-preview.png');
 
 --Restaurant
-
+INSERT INTO Restaurant (RestaurantName, Address, imageURL)
+VALUES
+('Holmes', '12 Garden Street, Cairo', 'frontend/resources/Screenshot%202025-12-02%20170053.png?raw=true'),
+('Pizza Hut', '45 Nile Avenue, Giza', 'frontend/resources/pizza.jpg'),
+("Little E's", '10 Freedom Road, Cairo', 'frontend/resources/little.jpg'),
+('5 Roosters', '19 Lotus Compound, Cairo', 'frontend/resources/5%20roosters.jpg'),
+('Coff', '9 Lotus Compound, Cairo', 'frontend/resources/coff.jpg?raw=true'),
+('The Wok Restaurant', '88 Tahrir Square, Giza', 'https://ibb.co/mrTqphqq');
 --FoodItems
 INSERT INTO FoodItems (CategoryID, RestaurantID, ItemName, ItemDescription, Price, imageURL)
 VALUES
