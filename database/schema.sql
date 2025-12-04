@@ -120,7 +120,7 @@ CREATE TABLE Orders (
     DeliveryFee DECIMAL(10,2) NOT NULL,
     ShippingAddressID INT NOT NULL,
     PaymentID INT NOT NULL,
-    OrderStatus ENUM('Pending','In Progress','Completed','Delivered','Cancelled') 
+    OrderStatus ENUM('Pending','Being Prepared','On The Way','Delivered','Cancelled') 
         NOT NULL DEFAULT 'Pending',
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (ShippingAddressID) REFERENCES ShippingAddress(ShippingAddressID) ON DELETE CASCADE,
@@ -136,6 +136,17 @@ CREATE TABLE OrderItems (
     ItemID INT NOT NULL,
     Quantity INT NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
+);
+
+-- =================================================
+-- ORDER STATUS HISTORY FOR TRACKING
+-- =================================================
+CREATE TABLE OrderStatusHistory (
+    HistoryID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT NOT NULL,
+    Status ENUM('Placed','Preparing','On The Way','Delivered','Cancelled'),
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
 );
 
