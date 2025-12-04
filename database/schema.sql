@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS Users (
 CREATE TABLE IF NOT EXISTS ShippingAddress (
     ShippingAddressID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
+    AddressName VARCHAR(100),  -- ADDED: For checkout address selection
     Address VARCHAR(200),
     PostalCode VARCHAR(20),
     City VARCHAR(100),
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS ShippingAddress (
 CREATE TABLE IF NOT EXISTS Payment (
     PaymentID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
+    PaymentName VARCHAR(100),  -- ADDED: For checkout payment selection
     PaymentMethod VARCHAR(50) NOT NULL,  -- Cash, Debit or Credit
     CardholderName VARCHAR(100),
     CardNumber VARCHAR(30),
@@ -70,8 +72,11 @@ CREATE TABLE IF NOT EXISTS Orders (
     TotalAccount DECIMAL(10,2) NOT NULL,
     DeliveryFee DECIMAL(10,2) NOT NULL,
     ShippingAddressID INT NOT NULL,
-    PaymentID INT NOT NULL
-
+    PaymentID INT NOT NULL,
+    -- ADDED: Foreign key constraints for data integrity
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (ShippingAddressID) REFERENCES ShippingAddress(ShippingAddressID),
+    FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID)
 );
 
 CREATE TABLE IF NOT EXISTS OrderItems (

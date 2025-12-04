@@ -7,6 +7,10 @@ const menuRoutes = require("./src/routes/menuRoutes");
 const reviewRoutes = require("./src/routes/reviewRoutes");
 const itemRoutes = require("./src/routes/itemRoutes");
 const cartRoutes = require("./src/routes/cartRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const homeRoutes = require("./src/routes/homeRoutes");
+const orderRoutes = require("./src/routes/orderRoutes");
+
 
 const app = express();
 
@@ -18,6 +22,10 @@ app.use("/api/restaurants", menuRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/items", itemRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/home", homeRoutes);
+app.use("/api/orders", orderRoutes);
+
 
 // ROOT TEST ROUTE
 app.get("/", (req, res) => {

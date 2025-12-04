@@ -21,28 +21,31 @@ VALUES
 ('jana_samir', 'jana.samir@gmail.com', 'pass1223', FALSE, 'User'),
 ('kareem_rashad', 'kareem.rashad@gmail.com', 'pass1293', TRUE, 'User');
 
-INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
+-- ============================================
+-- MODIFIED: Added AddressName column
+-- ============================================
+INSERT INTO ShippingAddress (UserID, AddressName, Address, PostalCode, City, Country)
 VALUES
-(1, '12 Garden Street', '11511', 'Cairo', 'Egypt'),
-(2, '45 Nile Avenue', '11321', 'Giza', 'Egypt'),
-(3, '10 Freedom Road', '11765', 'Cairo', 'Egypt'),
-(4, '88 Tahrir Square', '11522', 'Giza', 'Egypt'),
-(5, '22 Palm Towers', '11330', 'Alexandria', 'Egypt'),
-(6, '9 Lotus Compound', '11444', 'Cairo', 'Egypt'),
-(7, '55 Horizon City', '11566', 'Cairo', 'Egypt'),
-(8, '19 Corniche Rd', '21111', 'Alexandria', 'Egypt'),
-(9, '77 Mountain View', '11355', 'Cairo', 'Egypt'),
-(10,'5 Green Park', '11499', 'Cairo', 'Egypt'),
-(11,'101 Lake View', '11821', 'Giza', 'Egypt'),
-(12,'4 Sunset Valley', '11402', 'Cairo', 'Egypt'),
-(13,'16 West Hills', '11378', 'Alexandria', 'Egypt'),
-(14,'88 Sunrise District', '11588', 'Cairo', 'Egypt'),
-(15,'33 Blue River', '11900', 'Cairo', 'Egypt'),
-(16,'120 Island Road', '11392', 'Giza', 'Egypt'),
-(17,'6 Marina Bay', '21122', 'Alexandria', 'Egypt'),
-(18,'44 Ocean Drive', '11470', 'Cairo', 'Egypt'),
-(19,'7 Maple Town', '11360', 'Giza', 'Egypt'),
-(20,'11 Silver Heights', '11380', 'Cairo', 'Egypt');
+(1, 'Home', '12 Garden Street', '11511', 'Cairo', 'Egypt'),
+(2, 'Home', '45 Nile Avenue', '11321', 'Giza', 'Egypt'),
+(3, 'Home', '10 Freedom Road', '11765', 'Cairo', 'Egypt'),
+(4, 'Home', '88 Tahrir Square', '11522', 'Giza', 'Egypt'),
+(5, 'Home', '22 Palm Towers', '11330', 'Alexandria', 'Egypt'),
+(6, 'Home', '9 Lotus Compound', '11444', 'Cairo', 'Egypt'),
+(7, 'Home', '55 Horizon City', '11566', 'Cairo', 'Egypt'),
+(8, 'Home', '19 Corniche Rd', '21111', 'Alexandria', 'Egypt'),
+(9, 'Home', '77 Mountain View', '11355', 'Cairo', 'Egypt'),
+(10, 'Home', '5 Green Park', '11499', 'Cairo', 'Egypt'),
+(11, 'Office', '101 Lake View', '11821', 'Giza', 'Egypt'),
+(12, 'Office', '4 Sunset Valley', '11402', 'Cairo', 'Egypt'),
+(13, 'Office', '16 West Hills', '11378', 'Alexandria', 'Egypt'),
+(14, 'Office', '88 Sunrise District', '11588', 'Cairo', 'Egypt'),
+(15, 'Office', '33 Blue River', '11900', 'Cairo', 'Egypt'),
+(16, 'Office', '120 Island Road', '11392', 'Giza', 'Egypt'),
+(17, 'Office', '6 Marina Bay', '21122', 'Alexandria', 'Egypt'),
+(18, 'Office', '44 Ocean Drive', '11470', 'Cairo', 'Egypt'),
+(19, 'Office', '7 Maple Town', '11360', 'Giza', 'Egypt'),
+(20, 'Office', '11 Silver Heights', '11380', 'Cairo', 'Egypt');
 
 DELIMITER $$
 
@@ -69,29 +72,33 @@ BEGIN
 END$$
 
 DELIMITER ;
-INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
-VALUES
-(1, 'Cash', NULL, NULL, NULL, NULL),
-(2, 'Cash', NULL, NULL, NULL, NULL),
-(3, 'Cash', NULL, NULL, NULL, NULL),
-(4, 'Cash', NULL, NULL, NULL, NULL),
-(5, 'Cash', NULL, NULL, NULL, NULL),
-(6, 'Cash', NULL, NULL, NULL, NULL),
-(7, 'Cash', NULL, NULL, NULL, NULL),
-(8, 'Cash', NULL, NULL, NULL, NULL),
-(9, 'Cash', NULL, NULL, NULL, NULL),
-(10, 'Cash', NULL, NULL, NULL, NULL),
 
-(11, 'Credit', 'John Smith', '4111111111111111', '2027-08-01', '123'),
-(12, 'Debit', 'David Jackson', '5500000000000004', '2026-11-01', '456'),
-(13, 'Credit', 'Emily Clark', '4007000000027', '2028-02-01', '789'),
-(14, 'Credit', 'Jennifer Brown', '6011000990139424', '2026-06-01', '321'),
-(15, 'Debit', 'Youssef Fathy', '3530111333300000', '2027-09-01', '654'),
-(16, 'Credit', 'Mariam Gamal', '4000056655665556', '2029-03-01', '987'),
-(17, 'Debit', 'Alaa Ismail', '5105105105105100', '2026-12-01', '147'),
-(18, 'Credit', 'Habiba Adel', '4111111111111129', '2028-07-01', '258'),
-(19, 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
-(20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
+-- ============================================
+-- MODIFIED: Added PaymentName column
+-- ============================================
+INSERT INTO Payment (UserID, PaymentName, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+VALUES
+(1, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(2, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(3, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(4, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(5, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(6, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(7, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(8, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(9, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(10, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+
+(11, 'John Smith Card', 'Credit', 'John Smith', '4111111111111111', '2027-08-01', '123'),
+(12, 'David Jackson Card', 'Debit', 'David Jackson', '5500000000000004', '2026-11-01', '456'),
+(13, 'Emily Clark Card', 'Credit', 'Emily Clark', '4007000000027', '2028-02-01', '789'),
+(14, 'Jennifer Brown Card', 'Credit', 'Jennifer Brown', '6011000990139424', '2026-06-01', '321'),
+(15, 'Youssef Fathy Card', 'Debit', 'Youssef Fathy', '3530111333300000', '2027-09-01', '654'),
+(16, 'Mariam Gamal Card', 'Credit', 'Mariam Gamal', '4000056655665556', '2029-03-01', '987'),
+(17, 'Alaa Ismail Card', 'Debit', 'Alaa Ismail', '5105105105105100', '2026-12-01', '147'),
+(18, 'Habiba Adel Card', 'Credit', 'Habiba Adel', '4111111111111129', '2028-07-01', '258'),
+(19, 'Tarek Mostafa Card', 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
+(20, 'Jana Samir Card', 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
 
 -- FoodCategory
 INSERT INTO FoodCategory (CategoryName, ImageURL)
@@ -146,6 +153,7 @@ VALUES
 (18, '2025-10-05 10:40:00', 40.00, 10.00, 18, 18),
 (19, '2025-11-03 20:10:00', 167.00, 12.00, 19, 19),
 (20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20);
+
 -- OrderItems
 INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price)
 VALUES
@@ -169,6 +177,7 @@ VALUES
 
 --  Order 6 (item 6)
 (6, 6, 1, 140.00);
+
 -- Reviews
 INSERT INTO Reviews (UserID, ItemID, Rating, Review)
 VALUES
@@ -202,6 +211,7 @@ VALUES
 (18,'2025-11-30'),
 (19,'2025-11-30'),
 (20,'2025-11-30');
+
 -- CartItems
 INSERT INTO CartItems (CartID, ItemID, Price, Quantity, Size)
 VALUES
