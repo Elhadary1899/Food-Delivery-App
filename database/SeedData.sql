@@ -127,7 +127,7 @@ VALUES
  'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
 
 -- =================================================
--- ORDERS
+-- ORDERS (EXISTING STATIC ORDERS)
 -- =================================================
 INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID, OrderStatus)
 VALUES
@@ -153,6 +153,26 @@ VALUES
 (20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20, 'Delivered');
 
 -- =================================================
+-- NEW SAMPLE TRACKING ORDERS FOR BACKEND TESTING
+-- =================================================
+INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID, OrderStatus)
+VALUES
+-- Dynamic tracking order → will progress via cron
+(1, NOW(), 150.00, 15.00, 1, 1, 'Pending'),
+
+-- Can still cancel
+(1, DATE_SUB(NOW(), INTERVAL 35 SECOND), 220.00, 10.00, 1, 1, 'Being Prepared'),
+
+-- Already on the way → cannot cancel
+(2, DATE_SUB(NOW(), INTERVAL 70 SECOND), 180.00, 20.00, 2, 2, 'On The Way'),
+
+-- Delivered
+(3, DATE_SUB(NOW(), INTERVAL 2 HOUR), 85.00, 10.00, 3, 3, 'Delivered'),
+
+-- Cancelled
+(4, DATE_SUB(NOW(), INTERVAL 1 DAY), 95.00, 15.00, 4, 4, 'Cancelled');
+
+-- =================================================
 -- ORDER ITEMS
 -- =================================================
 INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price)
@@ -165,7 +185,42 @@ VALUES
 (4, 4, 1, 95.00),
 (5, 5, 1, 60.00),
 (5, 6, 1, 140.00),
-(6, 6, 1, 140.00);
+(6, 6, 1, 140.00),
+
+-- New tracking items
+(21, 1, 2, 85.00),
+(22, 2, 1, 120.00),
+(23, 3, 1, 180.00),
+(24, 4, 1, 95.00),
+(25, 2, 1, 120.00);
+
+-- =================================================
+-- ORDER STATUS HISTORY
+-- =================================================
+INSERT INTO OrderStatusHistory (OrderID, Status, Timestamp)
+VALUES
+-- Order 21
+(21, 'Placed', NOW()),
+
+-- Order 22 (Preparing)
+(22, 'Placed', DATE_SUB(NOW(), INTERVAL 40 SECOND)),
+(22, 'Preparing', DATE_SUB(NOW(), INTERVAL 35 SECOND)),
+
+-- Order 23 (On The Way)
+(23, 'Placed', DATE_SUB(NOW(), INTERVAL 90 SECOND)),
+(23, 'Preparing', DATE_SUB(NOW(), INTERVAL 80 SECOND)),
+(23, 'On The Way', DATE_SUB(NOW(), INTERVAL 70 SECOND)),
+
+-- Order 24 Delivered
+(24, 'Placed', DATE_SUB(NOW(), INTERVAL 3 HOUR)),
+(24, 'Preparing', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
+(24, 'On The Way', DATE_SUB(NOW(), INTERVAL 110 MINUTE)),
+(24, 'Delivered', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
+
+-- Order 25 Cancelled
+(25, 'Placed', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(25, 'Preparing', DATE_SUB(NOW(), INTERVAL 23 HOUR)),
+(25, 'Cancelled', DATE_SUB(NOW(), INTERVAL 22 HOUR));
 
 -- =================================================
 -- REVIEWS
@@ -212,4 +267,3 @@ VALUES
 (1, 'SAVE55', 55.00, 'Fixed', '2025-12-05', FALSE),
 (1, 'SAVE40', 40.00, 'Fixed', '2025-12-05', FALSE),
 (1, 'SAVE20', 20.00, 'Fixed', '2025-12-05', FALSE);
-
