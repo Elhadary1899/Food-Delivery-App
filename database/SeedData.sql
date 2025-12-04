@@ -3,26 +3,26 @@
 -- =================================================
 INSERT INTO Users (username, email, password, PhoneNumber, marketing_opt, role)
 VALUES
-('lara_whitley', 'lara.whitley@gmail.com', 'pass123', NULL, TRUE, 'User'),
-('omar_hassan', 'omar.hassan@gmail.com', 'pass124', NULL, TRUE, 'User'),
-('nourhan_hamada', 'nourhan.hamada@gmail.com', 'pass125', NULL, TRUE, 'Admin'),
-('ahmed_samir', 'ahmed.samir@gmail.com', 'pass126', NULL, TRUE, 'User'),
-('sara_khaled', 'sara.khaled@gmail.com', 'pass127', NULL, FALSE, 'User'),
-('mohamed_adel', 'mohamed.adel@gmail.com', 'pass128', NULL, TRUE, 'User'),
-('mira_soliman', 'mira.soliman@gmail.com', 'pass129', NULL, TRUE, 'User'),
-('hassan_ali', 'hassan.ali@gmail.com', 'pass120', NULL, TRUE, 'User'),
-('fatma_hussein', 'fatma.hussein@gmail.com', 'pass1223', NULL, FALSE, 'User'),
-('john_smith', 'john.smith@gmail.com', 'pass1123', NULL, TRUE, 'User'),
-('david_jackson', 'david.jackson@gmail.com', 'pass1323', NULL, FALSE, 'User'),
-('emily_clark', 'emily.clark@gmail.com', 'pass1243', NULL, TRUE, 'User'),
-('jennifer_brown', 'jennifer.brown@gmail.com', 'pass1283', NULL, TRUE, 'User'),
-('youssef_fathy', 'youssef.fathy@gmail.com', 'pass1203', NULL, TRUE, 'User'),
-('mariam_gamal', 'mariam.gamal@gmail.com', 'pass1243', NULL, FALSE, 'User'),
-('alaa_ismail', 'alaa.ismail@gmail.com', 'pass1623', NULL, TRUE, 'User'),
-('habiba_adel', 'habiba.adel@gmail.com', 'pass1723', NULL, TRUE, 'User'),
-('tarek_mostafa', 'tarek.mostafa@gmail.com', 'pass1123', NULL, TRUE, 'User'),
-('jana_samir', 'jana.samir@gmail.com', 'pass1223', NULL, FALSE, 'User'),
-('kareem_rashad', 'kareem.rashad@gmail.com', 'pass1293', NULL, TRUE, 'User');
+('lara_whitley',     'lara.whitley@gmail.com',     'pass123',  '01012345678', TRUE,  'User'),
+('omar_hassan',      'omar.hassan@gmail.com',      'pass124',  '01123456789', TRUE,  'User'),
+('nourhan_hamada',   'nourhan.hamada@gmail.com',   'pass125',  '01234567890', TRUE,  'Admin'),
+('ahmed_samir',      'ahmed.samir@gmail.com',      'pass126',  '01598765432', TRUE,  'User'),
+('sara_khaled',      'sara.khaled@gmail.com',      'pass127',  '01087654321', FALSE, 'User'),
+('mohamed_adel',     'mohamed.adel@gmail.com',     'pass128',  '01156789012', TRUE,  'User'),
+('mira_soliman',     'mira.soliman@gmail.com',     'pass129',  '01267890123', TRUE,  'User'),
+('hassan_ali',       'hassan.ali@gmail.com',       'pass120',  '01512349876', TRUE,  'User'),
+('fatma_hussein',    'fatma.hussein@gmail.com',    'pass1223', '01099887766', FALSE, 'User'),
+('john_smith',       'john.smith@gmail.com',       'pass1123', '01144556677', TRUE,  'User'),
+('david_jackson',    'david.jackson@gmail.com',    'pass1323', '01255667788', FALSE, 'User'),
+('emily_clark',      'emily.clark@gmail.com',      'pass1243', '01566778899', TRUE,  'User'),
+('jennifer_brown',   'jennifer.brown@gmail.com',   'pass1283', '01011223344', TRUE,  'User'),
+('youssef_fathy',    'youssef.fathy@gmail.com',    'pass1203', '01177889900', TRUE,  'User'),
+('mariam_gamal',     'mariam.gamal@gmail.com',     'pass1243', '01244332211', FALSE, 'User'),
+('alaa_ismail',      'alaa.ismail@gmail.com',      'pass1623', '01533445566', TRUE,  'User'),
+('habiba_adel',      'habiba.adel@gmail.com',      'pass1723', '01055664433', TRUE,  'User'),
+('tarek_mostafa',    'tarek.mostafa@gmail.com',    'pass1123', '01122334455', TRUE,  'User'),
+('jana_samir',       'jana.samir@gmail.com',       'pass1223', '01299887755', FALSE, 'User'),
+('kareem_rashad',    'kareem.rashad@gmail.com',    'pass1293', '01511220033', TRUE,  'User');
 
 -- =================================================
 -- SHIPPING ADDRESSES 
