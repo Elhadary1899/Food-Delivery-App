@@ -19,7 +19,7 @@ CREATE TABLE Users (
 CREATE TABLE ShippingAddress (
     ShippingAddressID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
-    AddressName VARCHAR(100),              -- Added from friend’s schema
+    AddressName VARCHAR(100),
     Address VARCHAR(200),
     PostalCode VARCHAR(20),
     City VARCHAR(100),
@@ -33,7 +33,7 @@ CREATE TABLE ShippingAddress (
 CREATE TABLE Payment (
     PaymentID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
-    PaymentName VARCHAR(100),              -- Added from friend’s schema
+    PaymentName VARCHAR(100),
     PaymentMethod ENUM('Cash','Credit','Debit','MasterCard','Visa','PayPal'),
     CardholderName VARCHAR(100),
     CardNumber VARCHAR(30),

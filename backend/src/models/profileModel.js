@@ -432,4 +432,3 @@ exports.deletePaymentMethod = async (userId, paymentId) => {
         [paymentId, userId]
     );
 };
-

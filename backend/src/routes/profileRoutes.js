@@ -37,4 +37,3 @@ router.delete("/:userId/payments/:paymentId", profileController.deletePaymentMet
 
 
 module.exports = router;
-

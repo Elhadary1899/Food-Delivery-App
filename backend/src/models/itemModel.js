@@ -57,5 +57,3 @@ exports.getRecommendedItems = async (itemName, restaurantName) => {
         review_count: i.review_count
     }));
 };
-
-
