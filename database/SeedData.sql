@@ -1,88 +1,90 @@
 -- =================================================
 -- USERS
 -- =================================================
-INSERT INTO Users (username, email, password, marketing_opt, role)
+INSERT INTO Users (username, email, password, PhoneNumber, marketing_opt, role)
 VALUES
-('lara_whitley', 'lara.whitley@gmail.com', 'pass123', TRUE, 'User'),
-('omar_hassan', 'omar.hassan@gmail.com', 'pass124', TRUE, 'User'),
-('nourhan_hamada', 'nourhan.hamada@gmail.com', 'pass125', TRUE, 'Admin'),
-('ahmed_samir', 'ahmed.samir@gmail.com', 'pass126', TRUE, 'User'),
-('sara_khaled', 'sara.khaled@gmail.com', 'pass127', FALSE, 'User'),
-('mohamed_adel', 'mohamed.adel@gmail.com', 'pass128', TRUE, 'User'),
-('mira_soliman', 'mira.soliman@gmail.com', 'pass129', TRUE, 'User'),
-('hassan_ali', 'hassan.ali@gmail.com', 'pass120', TRUE, 'User'),
-('fatma_hussein', 'fatma.hussein@gmail.com', 'pass1223', FALSE, 'User'),
-('john_smith', 'john.smith@gmail.com', 'pass1123', TRUE, 'User'),
-('david_jackson', 'david.jackson@gmail.com', 'pass1323', FALSE, 'User'),
-('emily_clark', 'emily.clark@gmail.com', 'pass1243', TRUE, 'User'),
-('jennifer_brown', 'jennifer.brown@gmail.com', 'pass1283', TRUE, 'User'),
-('youssef_fathy', 'youssef.fathy@gmail.com', 'pass1203', TRUE, 'User'),
-('mariam_gamal', 'mariam.gamal@gmail.com', 'pass1243', FALSE, 'User'),
-('alaa_ismail', 'alaa.ismail@gmail.com', 'pass1623', TRUE, 'User'),
-('habiba_adel', 'habiba.adel@gmail.com', 'pass1723', TRUE, 'User'),
-('tarek_mostafa', 'tarek.mostafa@gmail.com', 'pass1123', TRUE, 'User'),
-('jana_samir', 'jana.samir@gmail.com', 'pass1223', FALSE, 'User'),
-('kareem_rashad', 'kareem.rashad@gmail.com', 'pass1293', TRUE, 'User');
+('lara_whitley', 'lara.whitley@gmail.com', 'pass123', NULL, TRUE, 'User'),
+('omar_hassan', 'omar.hassan@gmail.com', 'pass124', NULL, TRUE, 'User'),
+('nourhan_hamada', 'nourhan.hamada@gmail.com', 'pass125', NULL, TRUE, 'Admin'),
+('ahmed_samir', 'ahmed.samir@gmail.com', 'pass126', NULL, TRUE, 'User'),
+('sara_khaled', 'sara.khaled@gmail.com', 'pass127', NULL, FALSE, 'User'),
+('mohamed_adel', 'mohamed.adel@gmail.com', 'pass128', NULL, TRUE, 'User'),
+('mira_soliman', 'mira.soliman@gmail.com', 'pass129', NULL, TRUE, 'User'),
+('hassan_ali', 'hassan.ali@gmail.com', 'pass120', NULL, TRUE, 'User'),
+('fatma_hussein', 'fatma.hussein@gmail.com', 'pass1223', NULL, FALSE, 'User'),
+('john_smith', 'john.smith@gmail.com', 'pass1123', NULL, TRUE, 'User'),
+('david_jackson', 'david.jackson@gmail.com', 'pass1323', NULL, FALSE, 'User'),
+('emily_clark', 'emily.clark@gmail.com', 'pass1243', NULL, TRUE, 'User'),
+('jennifer_brown', 'jennifer.brown@gmail.com', 'pass1283', NULL, TRUE, 'User'),
+('youssef_fathy', 'youssef.fathy@gmail.com', 'pass1203', NULL, TRUE, 'User'),
+('mariam_gamal', 'mariam.gamal@gmail.com', 'pass1243', NULL, FALSE, 'User'),
+('alaa_ismail', 'alaa.ismail@gmail.com', 'pass1623', NULL, TRUE, 'User'),
+('habiba_adel', 'habiba.adel@gmail.com', 'pass1723', NULL, TRUE, 'User'),
+('tarek_mostafa', 'tarek.mostafa@gmail.com', 'pass1123', NULL, TRUE, 'User'),
+('jana_samir', 'jana.samir@gmail.com', 'pass1223', NULL, FALSE, 'User'),
+('kareem_rashad', 'kareem.rashad@gmail.com', 'pass1293', NULL, TRUE, 'User');
 
 -- =================================================
--- SHIPPING ADDRESSES
+-- SHIPPING ADDRESSES 
 -- =================================================
-INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
+INSERT INTO ShippingAddress (UserID, AddressName, Address, PostalCode, City, Country)
 VALUES
-(1, '12 Garden Street', '11511', 'Cairo', 'Egypt'),
-(2, '45 Nile Avenue', '11321', 'Giza', 'Egypt'),
-(3, '10 Freedom Road', '11765', 'Cairo', 'Egypt'),
-(4, '88 Tahrir Square', '11522', 'Giza', 'Egypt'),
-(5, '22 Palm Towers', '11330', 'Alexandria', 'Egypt'),
-(6, '9 Lotus Compound', '11444', 'Cairo', 'Egypt'),
-(7, '55 Horizon City', '11566', 'Cairo', 'Egypt'),
-(8, '19 Corniche Rd', '21111', 'Alexandria', 'Egypt'),
-(9, '77 Mountain View', '11355', 'Cairo', 'Egypt'),
-(10,'5 Green Park', '11499', 'Cairo', 'Egypt'),
-(11,'101 Lake View', '11821', 'Giza', 'Egypt'),
-(12,'4 Sunset Valley', '11402', 'Cairo', 'Egypt'),
-(13,'16 West Hills', '11378', 'Alexandria', 'Egypt'),
-(14,'88 Sunrise District', '11588', 'Cairo', 'Egypt'),
-(15,'33 Blue River', '11900', 'Cairo', 'Egypt'),
-(16,'120 Island Road', '11392', 'Giza', 'Egypt'),
-(17,'6 Marina Bay', '21122', 'Alexandria', 'Egypt'),
-(18,'44 Ocean Drive', '11470', 'Cairo', 'Egypt'),
-(19,'7 Maple Town', '11360', 'Giza', 'Egypt'),
-(20,'11 Silver Heights', '11380', 'Cairo', 'Egypt');
+(1,  'Home',   '12 Garden Street',        '11511', 'Cairo', 'Egypt'),
+(2,  'Home',   '45 Nile Avenue',          '11321', 'Giza', 'Egypt'),
+(3,  'Home',   '10 Freedom Road',         '11765', 'Cairo', 'Egypt'),
+(4,  'Home',   '88 Tahrir Square',        '11522', 'Giza', 'Egypt'),
+(5,  'Home',   '22 Palm Towers',          '11330', 'Alexandria', 'Egypt'),
+(6,  'Home',   '9 Lotus Compound',        '11444', 'Cairo', 'Egypt'),
+(7,  'Home',   '55 Horizon City',         '11566', 'Cairo', 'Egypt'),
+(8,  'Home',   '19 Corniche Rd',          '21111', 'Alexandria', 'Egypt'),
+(9,  'Home',   '77 Mountain View',        '11355', 'Cairo', 'Egypt'),
+(10, 'Home',   '5 Green Park',            '11499', 'Cairo', 'Egypt'),
+(11, 'Office', '101 Lake View',           '11821', 'Giza', 'Egypt'),
+(12, 'Office', '4 Sunset Valley',         '11402', 'Cairo', 'Egypt'),
+(13, 'Office', '16 West Hills',           '11378', 'Alexandria', 'Egypt'),
+(14, 'Office', '88 Sunrise District',     '11588', 'Cairo', 'Egypt'),
+(15, 'Office', '33 Blue River',           '11900', 'Cairo', 'Egypt'),
+(16, 'Office', '120 Island Road',         '11392', 'Giza', 'Egypt'),
+(17, 'Office', '6 Marina Bay',            '21122', 'Alexandria', 'Egypt'),
+(18, 'Office', '44 Ocean Drive',          '11470', 'Cairo', 'Egypt'),
+(19, 'Office', '7 Maple Town',            '11360', 'Giza', 'Egypt'),
+(20, 'Office', '11 Silver Heights',       '11380', 'Cairo', 'Egypt');
 
 -- =================================================
 -- PAYMENT METHODS
 -- =================================================
-INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+INSERT INTO Payment (UserID, PaymentName, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
 VALUES
--- Cash (no card)
-(1, 'Cash', NULL, NULL, NULL, NULL),
-(2, 'Cash', NULL, NULL, NULL, NULL),
-(3, 'Cash', NULL, NULL, NULL, NULL),
-(4, 'Cash', NULL, NULL, NULL, NULL),
-(5, 'Cash', NULL, NULL, NULL, NULL),
-(6, 'Cash', NULL, NULL, NULL, NULL),
-(7, 'Cash', NULL, NULL, NULL, NULL),
-(8, 'Cash', NULL, NULL, NULL, NULL),
-(9, 'Cash', NULL, NULL, NULL, NULL),
-(10,'Cash', NULL, NULL, NULL, NULL),
+-- Cash payments
+(1,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(2,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(3,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(4,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(5,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(6,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(7,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(8,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(9,  'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
+(10, 'Cash Payment', 'Cash', NULL, NULL, NULL, NULL),
 
--- Card payments
-(11, 'Credit', 'John Smith', '4111111111111111', '2027-08-01', '123'),
-(12, 'Debit', 'David Jackson', '5500000000000004', '2026-11-01', '456'),
-(13, 'Credit', 'Emily Clark', '4007000000027', '2028-02-01', '789'),
-(14, 'Credit', 'Jennifer Brown', '6011000990139424', '2026-06-01', '321'),
-(15, 'Debit', 'Youssef Fathy', '3530111333300000', '2027-09-01', '654'),
-(16, 'Credit', 'Mariam Gamal', '4000056655665556', '2029-03-01', '987'),
-(17, 'Debit', 'Alaa Ismail', '5105105105105100', '2026-12-01', '147'),
-(18, 'Credit', 'Habiba Adel', '4111111111111129', '2028-07-01', '258'),
-(19, 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
-(20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159'),
+-- Cards
+(11, 'John Smith Card',      'Credit', 'John Smith',        '4111111111111111', '2027-08-01', '123'),
+(12, 'David Jackson Card',   'Debit',  'David Jackson',     '5500000000000004', '2026-11-01', '456'),
+(13, 'Emily Clark Card',     'Credit', 'Emily Clark',       '4007000000027',    '2028-02-01', '789'),
+(14, 'Jennifer Brown Card',  'Credit', 'Jennifer Brown',    '6011000990139424', '2026-06-01', '321'),
+(15, 'Youssef Fathy Card',   'Debit',  'Youssef Fathy',     '3530111333300000', '2027-09-01', '654'),
+(16, 'Mariam Gamal Card',    'Credit', 'Mariam Gamal',      '4000056655665556', '2029-03-01', '987'),
+(17, 'Alaa Ismail Card',     'Debit',  'Alaa Ismail',       '5105105105105100', '2026-12-01', '147'),
+(18, 'Habiba Adel Card',     'Credit', 'Habiba Adel',       '4111111111111129', '2028-07-01', '258'),
+(19, 'Tarek Mostafa Card',   'Debit',  'Tarek Mostafa',     '6011111111111117', '2027-01-01', '369'),
+(20, 'Jana Samir Card',      'Credit', 'Jana Samir',        '3566002020360505', '2029-10-01', '159');
 
--- NEW methods for UI testing
-(1, 'PayPal', NULL, NULL, NULL, NULL),
-(2, 'Visa', 'Visa User', '4111111111111111', '2028-12-01', '222'),
-(3, 'MasterCard', 'MC User', '5555444433331111', '2028-11-01', '333');
+-- NEW UI testing methods
+INSERT INTO Payment (UserID, PaymentName, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+VALUES
+(1, 'PayPal Wallet', 'PayPal', NULL, NULL, NULL, NULL),
+(2, 'Visa Card',     'Visa',  'Visa User', '4111111111111111', '2028-12-01', '222'),
+(3, 'MasterCard',    'MasterCard', 'MC User', '5555444433331111', '2028-11-01', '333');
 
 -- =================================================
 -- FOOD CATEGORIES
@@ -94,7 +96,7 @@ VALUES
 ('Meat Grill', 'frontend/resources/photo_2025-12-02_16-43-35.jpg'),
 ('Fried Chicken', 'frontend/resources/fried chicken category.jpg'),
 ('Dessert', 'frontend/resources/Elemento-3-D-Bolo-no-Prato-PNG-Transparente-removebg-preview.png'),
-('Sushi', 'frontend/resources/download-49-removebg-preview.png');
+('Sushi','frontend/resources/download-49-removebg-preview.png');
 
 -- =================================================
 -- RESTAURANTS
@@ -113,21 +115,15 @@ VALUES
 -- =================================================
 INSERT INTO FoodItems (CategoryID, RestaurantID, ItemName, ItemDescription, Price, imageURL)
 VALUES
-(1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00,
- 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
-(2, 2, 'Pepperoni Pizza', 'Tomato, mozzarella, basil', 120.00,
- 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
-(3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00,
- 'frontend/resources/mix grill.jpg'),
-(4, 4, 'Fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00,
- 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
-(5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00,
- 'frontend/resources/22g242_1200x1200.webp'),
-(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00,
- 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
+(1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00, 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
+(2, 2, 'Pepperoni Pizza', 'Tomato, mozzarella, basil', 120.00, 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
+(3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00, 'frontend/resources/mix grill.jpg'),
+(4, 4, 'Fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00, 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
+(5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00, 'frontend/resources/22g242_1200x1200.webp'),
+(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
 
 -- =================================================
--- ORDERS (EXISTING STATIC ORDERS)
+-- ORDERS (STATIC + TRACKING ORDERS)
 -- =================================================
 INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID, OrderStatus)
 VALUES
@@ -150,26 +146,13 @@ VALUES
 (17, '2025-10-02 09:30:00', 75.00, 10.00, 17, 17, 'Pending'),
 (18, '2025-10-05 10:40:00', 40.00, 10.00, 18, 18, 'Delivered'),
 (19, '2025-11-03 20:10:00', 167.00, 12.00, 19, 19, 'Delivered'),
-(20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20, 'Delivered');
+(20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20, 'Delivered'),
 
--- =================================================
--- NEW SAMPLE TRACKING ORDERS FOR BACKEND TESTING
--- =================================================
-INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID, OrderStatus)
-VALUES
--- Dynamic tracking order → will progress via cron
+-- Tracking test orders
 (1, NOW(), 150.00, 15.00, 1, 1, 'Pending'),
-
--- Can still cancel
 (1, DATE_SUB(NOW(), INTERVAL 35 SECOND), 220.00, 10.00, 1, 1, 'Being Prepared'),
-
--- Already on the way → cannot cancel
 (2, DATE_SUB(NOW(), INTERVAL 70 SECOND), 180.00, 20.00, 2, 2, 'On The Way'),
-
--- Delivered
 (3, DATE_SUB(NOW(), INTERVAL 2 HOUR), 85.00, 10.00, 3, 3, 'Delivered'),
-
--- Cancelled
 (4, DATE_SUB(NOW(), INTERVAL 1 DAY), 95.00, 15.00, 4, 4, 'Cancelled');
 
 -- =================================================
@@ -199,25 +182,16 @@ VALUES
 -- =================================================
 INSERT INTO OrderStatusHistory (OrderID, Status, Timestamp)
 VALUES
--- Order 21
 (21, 'Placed', NOW()),
-
--- Order 22 (Preparing)
 (22, 'Placed', DATE_SUB(NOW(), INTERVAL 40 SECOND)),
 (22, 'Preparing', DATE_SUB(NOW(), INTERVAL 35 SECOND)),
-
--- Order 23 (On The Way)
 (23, 'Placed', DATE_SUB(NOW(), INTERVAL 90 SECOND)),
 (23, 'Preparing', DATE_SUB(NOW(), INTERVAL 80 SECOND)),
 (23, 'On The Way', DATE_SUB(NOW(), INTERVAL 70 SECOND)),
-
--- Order 24 Delivered
 (24, 'Placed', DATE_SUB(NOW(), INTERVAL 3 HOUR)),
 (24, 'Preparing', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
 (24, 'On The Way', DATE_SUB(NOW(), INTERVAL 110 MINUTE)),
 (24, 'Delivered', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
-
--- Order 25 Cancelled
 (25, 'Placed', DATE_SUB(NOW(), INTERVAL 1 DAY)),
 (25, 'Preparing', DATE_SUB(NOW(), INTERVAL 23 HOUR)),
 (25, 'Cancelled', DATE_SUB(NOW(), INTERVAL 22 HOUR));
