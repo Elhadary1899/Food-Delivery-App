@@ -42,3 +42,60 @@ exports.getCartItems = async (req, res) => {
         return response.error(res, err.message);
     }
 };
+
+// ============================================
+// INCREMENT ITEM'S QUANTITY
+// ============================================
+exports.incrementItem = async (req, res) => {
+    try {
+        const { user_id, item_name, restaurant_name, size } = req.body;
+
+        const result = await cartModel.updateQuantity(
+            user_id,
+            item_name,
+            restaurant_name,
+            size,
+            +1
+        );
+
+        return response.success(res, result);
+    } catch (err) {
+        return response.error(res, err.message);
+    }
+};
+
+// ============================================
+// DECREMENT ITEM'S QUANTITY
+// ============================================
+exports.decrementItem = async (req, res) => {
+    try {
+        const { user_id, item_name, restaurant_name, size } = req.body;
+
+        const result = await cartModel.updateQuantity(
+            user_id,
+            item_name,
+            restaurant_name,
+            size,
+            -1
+        );
+
+        return response.success(res, result);
+    } catch (err) {
+        return response.error(res, err.message);
+    }
+};
+
+// ============================================
+// REMOVE ITEM FROM CART
+// ============================================
+exports.removeItem = async (req, res) => {
+    try {
+        const { user_id, item_name, restaurant_name, size } = req.body;
+
+        const result = await cartModel.removeItem(user_id, item_name, restaurant_name, size);
+
+        return response.success(res, result);
+    } catch (err) {
+        return response.error(res, err.message);
+    }
+};

@@ -623,25 +623,27 @@ BEGIN
     END IF;
 END$$
 
-
 CREATE PROCEDURE sp_UpdateCartQuantity(
     IN p_user_id INT,
     IN p_item_name VARCHAR(150),
     IN p_restaurant_name VARCHAR(255),
     IN p_size VARCHAR(50),
-    IN p_quantity INT
+    IN p_quantity INT   -- +1 or -1
 )
 BEGIN
     DECLARE v_cart_id INT;
     DECLARE v_item_id INT;
+    DECLARE v_current_qty INT DEFAULT 0;
+    DECLARE v_new_qty INT;
 
+    -- Get latest cart
     SELECT CartID INTO v_cart_id
     FROM Cart
     WHERE UserID = p_user_id
     ORDER BY Cart_date DESC
     LIMIT 1;
 
-    -- Identify correct restaurant item
+    -- Get correct item from restaurant
     SELECT f.ItemID INTO v_item_id
     FROM FoodItems f
     JOIN Restaurant r ON f.RestaurantID = r.RestaurantID
@@ -649,18 +651,29 @@ BEGIN
       AND r.RestaurantName = p_restaurant_name
     LIMIT 1;
 
-    IF p_quantity > 0 THEN
-        UPDATE CartItems
-        SET Quantity = p_quantity
-        WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
+    -- Get current quantity
+    SELECT Quantity INTO v_current_qty
+    FROM CartItems
+    WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size
+    LIMIT 1;
 
-        SELECT 'Cart quantity updated' AS message;
-    ELSE
+    -- Compute new quantity
+    SET v_new_qty = v_current_qty + p_quantity;
+
+    -- Remove if new quantity <= 0
+    IF v_new_qty <= 0 THEN
         DELETE FROM CartItems
         WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
 
         SELECT 'Item removed from cart' AS message;
+    ELSE
+        UPDATE CartItems
+        SET Quantity = v_new_qty
+        WHERE CartID = v_cart_id AND ItemID = v_item_id AND Size = p_size;
+
+        SELECT CONCAT('Quantity updated to ', v_new_qty) AS message;
     END IF;
+
 END$$
 
 CREATE PROCEDURE sp_RemoveFromCart(
