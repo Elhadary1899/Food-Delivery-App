@@ -1,11 +1,4 @@
 -- =================================================
--- CREATE DATABASE
--- =================================================
-DROP DATABASE IF EXISTS food_delivery_app;
-CREATE DATABASE food_delivery_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE food_delivery_app;
-
--- =================================================
 -- USERS
 -- =================================================
 CREATE TABLE Users (
@@ -26,6 +19,7 @@ CREATE TABLE Users (
 CREATE TABLE ShippingAddress (
     ShippingAddressID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
+    AddressName VARCHAR(100),              -- Added from friend’s schema
     Address VARCHAR(200),
     PostalCode VARCHAR(20),
     City VARCHAR(100),
@@ -39,6 +33,7 @@ CREATE TABLE ShippingAddress (
 CREATE TABLE Payment (
     PaymentID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
+    PaymentName VARCHAR(100),              -- Added from friend’s schema
     PaymentMethod ENUM('Cash','Credit','Debit','MasterCard','Visa','PayPal'),
     CardholderName VARCHAR(100),
     CardNumber VARCHAR(30),
@@ -47,7 +42,9 @@ CREATE TABLE Payment (
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
--- Payment Trigger (supports PayPal)
+-- =================================================
+-- Trigger: Card validation
+-- =================================================
 DROP TRIGGER IF EXISTS trg_payment_before_insert;
 DELIMITER $$
 
@@ -62,13 +59,13 @@ BEGIN
         SET NEW.ExpirationDate = NULL;
         SET NEW.CVC = NULL;
     ELSE
-        -- Other methods require card info
+        -- Card methods require full details
         IF NEW.CardholderName IS NULL
-           OR NEW.CardNumber IS NULL
-           OR NEW.ExpirationDate IS NULL
-           OR NEW.CVC IS NULL THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Card details are required for card payment methods';
+            OR NEW.CardNumber IS NULL
+            OR NEW.ExpirationDate IS NULL
+            OR NEW.CVC IS NULL THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Card details are required for card payment methods';
         END IF;
     END IF;
 END$$
@@ -120,7 +117,7 @@ CREATE TABLE Orders (
     DeliveryFee DECIMAL(10,2) NOT NULL,
     ShippingAddressID INT NOT NULL,
     PaymentID INT NOT NULL,
-    OrderStatus ENUM('Pending','Being Prepared','On The Way','Delivered','Cancelled') 
+    OrderStatus ENUM('Pending','Being Prepared','On The Way','Delivered','Cancelled')
         NOT NULL DEFAULT 'Pending',
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (ShippingAddressID) REFERENCES ShippingAddress(ShippingAddressID) ON DELETE CASCADE,
@@ -140,7 +137,7 @@ CREATE TABLE OrderItems (
 );
 
 -- =================================================
--- ORDER STATUS HISTORY FOR TRACKING
+-- ORDER STATUS HISTORY (tracking)
 -- =================================================
 CREATE TABLE OrderStatusHistory (
     HistoryID INT AUTO_INCREMENT PRIMARY KEY,
