@@ -22,10 +22,12 @@ exports.getUserOrders = async (userId, status = null) => {
             COUNT(oi.OrderItemID) AS item_count,
             sa.Address,
             sa.City,
-            sa.Country
+            sa.Country,
+            p.PaymentMethod
         FROM Orders o
         LEFT JOIN OrderItems oi ON o.OrderID = oi.OrderID
         LEFT JOIN ShippingAddress sa ON o.ShippingAddressID = sa.ShippingAddressID
+        LEFT JOIN Payment p ON o.PaymentID = p.PaymentID
         WHERE o.UserID = ?
     `;
     
@@ -41,8 +43,8 @@ exports.getUserOrders = async (userId, status = null) => {
     query += ` GROUP BY o.OrderID ORDER BY o.OrderDate DESC`;
     
     const [orders] = await db.query(query, params);
-    
-    // Get order items for each order
+
+    // Fetch items for each order
     const ordersWithItems = await Promise.all(
         orders.map(async (order) => {
             const [items] = await db.query(
@@ -58,15 +60,26 @@ exports.getUserOrders = async (userId, status = null) => {
                 WHERE oi.OrderID = ?`,
                 [order.OrderID]
             );
-            
+
+            const formattedDate = new Date(order.OrderDate).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true
+            });
+
             return {
                 order_id: order.OrderID,
                 order_number: order.order_number,
                 order_date: order.OrderDate,
+                order_date_formatted: formattedDate,
                 total_amount: parseFloat(order.TotalAccount),
                 delivery_fee: parseFloat(order.DeliveryFee),
                 grand_total: parseFloat(order.grand_total),
                 order_status: order.OrderStatus,
+                payment_method: order.PaymentMethod,  // NEW
                 item_count: order.item_count,
                 shipping_address: {
                     address: order.Address,
@@ -84,7 +97,7 @@ exports.getUserOrders = async (userId, status = null) => {
             };
         })
     );
-    
+
     return ordersWithItems;
 };
 
@@ -112,6 +125,72 @@ exports.getUserAddresses = async (userId) => {
         city: addr.City,
         country: addr.Country
     }));
+};
+
+// ===================================================
+// ADD ADDRESS TO THE USER
+// ===================================================
+exports.addUserAddress = async (userId, data) => {
+    const [result] = await db.query(
+        `INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
+         VALUES (?, ?, ?, ?, ?)`,
+        [userId, data.address, data.postal_code, data.city, data.country]
+    );
+
+    return {
+        address_id: result.insertId,
+        address: data.address,
+        postal_code: data.postal_code,
+        city: data.city,
+        country: data.country
+    };
+};
+
+// ===================================================
+// UPDATE USER ADDRESS
+// ===================================================
+exports.updateUserAddress = async (userId, addressId, data) => {
+    const fields = [];
+    const params = [];
+
+    if (data.address) {
+        fields.push("Address = ?");
+        params.push(data.address);
+    }
+    if (data.postal_code) {
+        fields.push("PostalCode = ?");
+        params.push(data.postal_code);
+    }
+    if (data.city) {
+        fields.push("City = ?");
+        params.push(data.city);
+    }
+    if (data.country) {
+        fields.push("Country = ?");
+        params.push(data.country);
+    }
+
+    params.push(addressId, userId);
+
+    await db.query(
+        `UPDATE ShippingAddress SET ${fields.join(", ")}
+         WHERE ShippingAddressID = ? AND UserID = ?`,
+        params
+    );
+
+    return { message: "Address updated successfully" };
+};
+
+// ===================================================
+// DELETE USER ADDRESS
+// ===================================================
+exports.deleteUserAddress = async (userId, addressId) => {
+    await db.query(
+        `DELETE FROM ShippingAddress WHERE ShippingAddressID = ? AND UserID = ?`,
+        [addressId, userId]
+    );
+
+    return { message: "Address deleted successfully" };
 };
 
 // ===================================================
@@ -262,44 +341,95 @@ exports.getUserCoupons = async (userId) => {
         ORDER BY CreatedAt DESC`,
         [userId]
     );
-    
+
     return coupons.map(coupon => ({
         coupon_id: coupon.CouponID,
-        coupon_code: coupon.CouponCode,
+        title: `$${coupon.DiscountAmount} Off On Your Next Order`,
         discount_amount: parseFloat(coupon.DiscountAmount),
         discount_type: coupon.DiscountType,
-        expiry_date: coupon.ExpiryDate,
+        expiry_date: formatDate(coupon.ExpiryDate),
         is_used: coupon.IsUsed === 1,
-        created_at: coupon.CreatedAt
+        created_at: coupon.CreatedAt,
+        icon: "icons/coupon.png"
     }));
 };
+
+function formatDate(date) {
+    const d = new Date(date);
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
+}
 
 // ===================================================
 // GET USER PAYMENTS
 // ===================================================
 exports.getUserPayments = async (userId) => {
-    const [payments] = await db.query(
-        `SELECT 
-            PaymentID,
-            PaymentMethod,
-            CardholderName,
-            CASE 
-                WHEN CardNumber IS NOT NULL THEN CONCAT('****', RIGHT(CardNumber, 4))
-                ELSE NULL
-            END AS masked_card_number,
-            ExpirationDate
+
+    const [rows] = await db.query(
+        `SELECT PaymentID AS payment_id,
+                PaymentMethod AS method,
+                CardNumber,
+                DATE_FORMAT(ExpirationDate, '%m/%Y') AS exp
         FROM Payment
-        WHERE UserID = ?
-        ORDER BY PaymentID DESC`,
+        WHERE UserID = ?`,
         [userId]
     );
-    
-    return payments.map(payment => ({
-        payment_id: payment.PaymentID,
-        payment_method: payment.PaymentMethod,
-        cardholder_name: payment.CardholderName || null,
-        masked_card_number: payment.masked_card_number,
-        expiration_date: payment.ExpirationDate || null
+
+    return rows.map(p => ({
+        payment_id: p.payment_id,
+        method: p.method,
+        last4: p.CardNumber ? p.CardNumber.slice(-4) : null,
+        exp: p.exp,
+        brand_icon: getBrandIcon(p.method) // now consistent
     }));
+};
+
+function getBrandIcon(method) {
+    if (!method) return null;
+    return `icons/${method}.png`;  // dynamic icon path
+}
+
+// ===================================================
+// ADD PAYMENT Method
+// ===================================================
+exports.addPaymentMethod = async (userId, data) => {
+    if (data.method !== "PayPal" && data.method !== "Cash") {
+        if (!data.cardholder || !data.number || !data.exp || !data.cvc) {
+            throw new Error("Card details required for card payments");
+        }
+    }
+
+    const [result] = await db.query(
+        `INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+            userId,
+            data.method,
+            data.cardholder || null,
+            data.number || null,
+            data.exp || null,
+            data.cvc || null
+        ]
+    );
+
+    return {
+        payment_id: result.insertId,
+        method: data.method,
+        last4: data.number ? data.number.slice(-4) : null,
+        exp: data.exp ? new Date(data.exp).toISOString().substring(0, 7).replace("-", "/") : null,
+        brand_icon: getBrandIcon(data.method)
+    };
+};
+
+// ===================================================
+// DELETE PAYMENT Method
+// ===================================================
+exports.deletePaymentMethod = async (userId, paymentId) => {
+    await db.query(
+        `DELETE FROM Payment WHERE PaymentID = ? AND UserID = ?`,
+        [paymentId, userId]
+    );
 };
 

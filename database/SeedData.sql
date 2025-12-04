@@ -1,4 +1,7 @@
-INSERT  INTO Users (username, email, password, marketing_opt, role)
+-- =================================================
+-- USERS
+-- =================================================
+INSERT INTO Users (username, email, password, marketing_opt, role)
 VALUES
 ('lara_whitley', 'lara.whitley@gmail.com', 'pass123', TRUE, 'User'),
 ('omar_hassan', 'omar.hassan@gmail.com', 'pass124', TRUE, 'User'),
@@ -21,6 +24,9 @@ VALUES
 ('jana_samir', 'jana.samir@gmail.com', 'pass1223', FALSE, 'User'),
 ('kareem_rashad', 'kareem.rashad@gmail.com', 'pass1293', TRUE, 'User');
 
+-- =================================================
+-- SHIPPING ADDRESSES
+-- =================================================
 INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
 VALUES
 (1, '12 Garden Street', '11511', 'Cairo', 'Egypt'),
@@ -44,33 +50,12 @@ VALUES
 (19,'7 Maple Town', '11360', 'Giza', 'Egypt'),
 (20,'11 Silver Heights', '11380', 'Cairo', 'Egypt');
 
-DELIMITER $$
-
-CREATE TRIGGER trg_payment_before_insert
-BEFORE INSERT ON Payment
-FOR EACH ROW
-BEGIN
-    --  If payment is Cash, clear all card fields
-    IF NEW.PaymentMethod = 'Cash' THEN
-        SET NEW.CardholderName = NULL;
-        SET NEW.CardNumber = NULL;
-        SET NEW.ExpirationDate = NULL;
-        SET NEW.CVC = NULL;
-    ELSE
-        --  For Credit/Debit, ensure card details are provided
-        IF NEW.CardholderName IS NULL
-           OR NEW.CardNumber IS NULL
-           OR NEW.ExpirationDate IS NULL
-           OR NEW.CVC IS NULL THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Card details are required for non-cash payment methods';
-        END IF;
-    END IF;
-END$$
-
-DELIMITER ;
+-- =================================================
+-- PAYMENT METHODS
+-- =================================================
 INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
 VALUES
+-- Cash (no card)
 (1, 'Cash', NULL, NULL, NULL, NULL),
 (2, 'Cash', NULL, NULL, NULL, NULL),
 (3, 'Cash', NULL, NULL, NULL, NULL),
@@ -80,8 +65,9 @@ VALUES
 (7, 'Cash', NULL, NULL, NULL, NULL),
 (8, 'Cash', NULL, NULL, NULL, NULL),
 (9, 'Cash', NULL, NULL, NULL, NULL),
-(10, 'Cash', NULL, NULL, NULL, NULL),
+(10,'Cash', NULL, NULL, NULL, NULL),
 
+-- Card payments
 (11, 'Credit', 'John Smith', '4111111111111111', '2027-08-01', '123'),
 (12, 'Debit', 'David Jackson', '5500000000000004', '2026-11-01', '456'),
 (13, 'Credit', 'Emily Clark', '4007000000027', '2028-02-01', '789'),
@@ -91,9 +77,16 @@ VALUES
 (17, 'Debit', 'Alaa Ismail', '5105105105105100', '2026-12-01', '147'),
 (18, 'Credit', 'Habiba Adel', '4111111111111129', '2028-07-01', '258'),
 (19, 'Debit', 'Tarek Mostafa', '6011111111111117', '2027-01-01', '369'),
-(20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159');
+(20, 'Credit', 'Jana Samir', '3566002020360505', '2029-10-01', '159'),
 
--- FoodCategory
+-- NEW methods for UI testing
+(1, 'PayPal', NULL, NULL, NULL, NULL),
+(2, 'Visa', 'Visa User', '4111111111111111', '2028-12-01', '222'),
+(3, 'MasterCard', 'MC User', '5555444433331111', '2028-11-01', '333');
+
+-- =================================================
+-- FOOD CATEGORIES
+-- =================================================
 INSERT INTO FoodCategory (CategoryName, ImageURL)
 VALUES
 ('Burger', 'frontend/resources/pngtree-burger-and-fries-ai-generated-png-image_14563042.png'),
@@ -101,9 +94,11 @@ VALUES
 ('Meat Grill', 'frontend/resources/photo_2025-12-02_16-43-35.jpg'),
 ('Fried Chicken', 'frontend/resources/fried chicken category.jpg'),
 ('Dessert', 'frontend/resources/Elemento-3-D-Bolo-no-Prato-PNG-Transparente-removebg-preview.png'),
-('Sushi','frontend/resources/download-49-removebg-preview.png');
+('Sushi', 'frontend/resources/download-49-removebg-preview.png');
 
--- Restaurant
+-- =================================================
+-- RESTAURANTS
+-- =================================================
 INSERT INTO Restaurant (RestaurantName, RestaurantRating, Address, imageURL)
 VALUES
 ('Holmes', 4.5, '12 Garden Street, Cairo', 'frontend/resources/Screenshot%202025-12-02%20170053.png?raw=true'),
@@ -113,63 +108,68 @@ VALUES
 ('Coff', 4.2, '9 Lotus Compound, Cairo', 'frontend/resources/coff.jpg?raw=true'),
 ('The Wok Restaurant', 4.4, '88 Tahrir Square, Giza', 'https://ibb.co/mrTqphqq');
 
--- FoodItems
+-- =================================================
+-- FOOD ITEMS
+-- =================================================
 INSERT INTO FoodItems (CategoryID, RestaurantID, ItemName, ItemDescription, Price, imageURL)
 VALUES
-(1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00, 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
-(2, 2, 'Pepperoni Pizza', 'Tomato, mozzarella, basil', 120.00, 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
-(3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00, 'frontend/resources/mix grill.jpg'),
-(4, 4, 'fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00, 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
-(5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00, 'frontend/resources/22g242_1200x1200.webp'),
-(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
+(1, 1, 'Classic Beef Burger', 'Beef patty, cheese, lettuce, tomato', 85.00,
+ 'frontend/resources/Batatas-Fritas-E-Hamb-rguer-PNG-Comida-Comida-R-pida-Comida-N-o-Saud-vel-PNG-Imagem-para-download-gr.jpg'),
+(2, 2, 'Pepperoni Pizza', 'Tomato, mozzarella, basil', 120.00,
+ 'frontend/resources/Pepperoni-pizza-on-a-white-background-top-view-for-menu-royalty-free-stock-photo-removebg-preview.png'),
+(3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00,
+ 'frontend/resources/mix grill.jpg'),
+(4, 4, 'Fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00,
+ 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
+(5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00,
+ 'frontend/resources/22g242_1200x1200.webp'),
+(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00,
+ 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
 
--- Orders
-INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID)
+-- =================================================
+-- ORDERS
+-- =================================================
+INSERT INTO Orders (UserID, OrderDate, TotalAccount, DeliveryFee, ShippingAddressID, PaymentID, OrderStatus)
 VALUES
-(1, '2025-02-01 14:30:00', 220.00, 15.00, 1, 1),
-(2, '2025-02-02 18:20:00', 140.00, 20.00, 2, 2),
-(3, '2025-03-05 12:10:00', 290.00, 15.00, 3, 3),
-(4, '2025-03-07 20:45:00', 110.00, 15.00, 4, 4),
-(5, '2025-04-10 13:25:00', 210.00, 10.00, 5, 5),
-(6, '2025-04-12 19:00:00', 160.00, 20.00, 6, 6),
-(7, '2025-05-01 17:30:00', 245.00, 15.00, 7, 7),
-(8, '2025-05-03 08:15:00', 80.00, 10.00, 8, 8),
-(9, '2025-06-21 12:50:00', 125.00, 10.00, 9, 9),
-(10, '2025-06-25 21:05:00', 90.00, 15.00, 10, 10),
-(11, '2025-07-04 14:00:00', 135.00, 15.00, 11, 11),
-(12, '2025-07-10 15:30:00', 65.00, 10.00, 12, 12),
-(13, '2025-08-01 13:10:00', 105.00, 10.00, 13, 13),
-(14, '2025-08-12 19:40:00', 57.00, 12.00, 14, 14),
-(15, '2025-09-18 18:20:00', 210.00, 15.00, 15, 15),
-(16, '2025-09-20 11:05:00', 100.00, 15.00, 16, 16),
-(17, '2025-10-02 09:30:00', 75.00, 10.00, 17, 17),
-(18, '2025-10-05 10:40:00', 40.00, 10.00, 18, 18),
-(19, '2025-11-03 20:10:00', 167.00, 12.00, 19, 19),
-(20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20);
--- OrderItems
+(1, '2025-02-01 14:30:00', 220.00, 15.00, 1, 1, 'Delivered'),
+(2, '2025-02-02 18:20:00', 140.00, 20.00, 2, 2, 'Completed'),
+(3, '2025-03-05 12:10:00', 290.00, 15.00, 3, 3, 'Cancelled'),
+(4, '2025-03-07 20:45:00', 110.00, 15.00, 4, 4, 'Delivered'),
+(5, '2025-04-10 13:25:00', 210.00, 10.00, 5, 5, 'Completed'),
+(6, '2025-04-12 19:00:00', 160.00, 20.00, 6, 6, 'In Progress'),
+(7, '2025-05-01 17:30:00', 245.00, 15.00, 7, 7, 'Pending'),
+(8, '2025-05-03 08:15:00', 80.00, 10.00, 8, 8, 'Delivered'),
+(9, '2025-06-21 12:50:00', 125.00, 10.00, 9, 9, 'Completed'),
+(10, '2025-06-25 21:05:00', 90.00, 15.00, 10, 10, 'Cancelled'),
+(11, '2025-07-04 14:00:00', 135.00, 15.00, 11, 11, 'Delivered'),
+(12, '2025-07-10 15:30:00', 65.00, 10.00, 12, 12, 'Completed'),
+(13, '2025-08-01 13:10:00', 105.00, 10.00, 13, 13, 'Delivered'),
+(14, '2025-08-12 19:40:00', 57.00, 12.00, 14, 14, 'Cancelled'),
+(15, '2025-09-18 18:20:00', 210.00, 15.00, 15, 15, 'Delivered'),
+(16, '2025-09-20 11:05:00', 100.00, 15.00, 16, 16, 'In Progress'),
+(17, '2025-10-02 09:30:00', 75.00, 10.00, 17, 17, 'Pending'),
+(18, '2025-10-05 10:40:00', 40.00, 10.00, 18, 18, 'Completed'),
+(19, '2025-11-03 20:10:00', 167.00, 12.00, 19, 19, 'Delivered'),
+(20, '2025-11-15 16:00:00', 105.00, 15.00, 20, 20, 'Completed');
+
+-- =================================================
+-- ORDER ITEMS
+-- =================================================
 INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price)
 VALUES
---  Order 1 (items 1 + 2)
 (1, 1, 1, 85.00),
 (1, 2, 1, 120.00),
-
---  Order 2 (item 2)
 (2, 2, 1, 120.00),
-
---  Order 3 (items 3 + 4)
 (3, 3, 1, 180.00),
 (3, 4, 1, 95.00),
-
---  Order 4 (item 4)
 (4, 4, 1, 95.00),
-
---  Order 5 (items 5 + 6)
 (5, 5, 1, 60.00),
 (5, 6, 1, 140.00),
-
---  Order 6 (item 6)
 (6, 6, 1, 140.00);
--- Reviews
+
+-- =================================================
+-- REVIEWS
+-- =================================================
 INSERT INTO Reviews (UserID, ItemID, Rating, Review)
 VALUES
 (1, 1, 5, 'Excellent burger — juicy and well seasoned.'),
@@ -179,30 +179,22 @@ VALUES
 (5, 5, 5, 'Lava cake was gooey and perfect.'),
 (6, 6, 5, 'Fresh salmon rolls, well balanced.');
 
--- Cart
+-- =================================================
+-- CART
+-- =================================================
 INSERT INTO Cart (UserID, Cart_date)
 VALUES
-(1, '2025-11-25'),
-(2, '2025-11-25'),
-(3, '2025-11-25'),
-(4, '2025-11-26'),
-(5, '2025-11-26'),
-(6, '2025-11-26'),
-(7, '2025-11-27'),
-(8, '2025-11-27'),
-(9, '2025-11-27'),
-(10,'2025-11-28'),
-(11,'2025-11-28'),
-(12,'2025-11-28'),
-(13,'2025-11-29'),
-(14,'2025-11-29'),
-(15,'2025-11-29'),
-(16,'2025-11-30'),
-(17,'2025-11-30'),
-(18,'2025-11-30'),
-(19,'2025-11-30'),
-(20,'2025-11-30');
--- CartItems
+(1, '2025-11-25'), (2, '2025-11-25'), (3, '2025-11-25'),
+(4, '2025-11-26'), (5, '2025-11-26'), (6, '2025-11-26'),
+(7, '2025-11-27'), (8, '2025-11-27'), (9, '2025-11-27'),
+(10,'2025-11-28'), (11,'2025-11-28'), (12,'2025-11-28'),
+(13,'2025-11-29'), (14,'2025-11-29'), (15,'2025-11-29'),
+(16,'2025-11-30'), (17,'2025-11-30'), (18,'2025-11-30'),
+(19,'2025-11-30'), (20,'2025-11-30');
+
+-- =================================================
+-- CART ITEMS
+-- =================================================
 INSERT INTO CartItems (CartID, ItemID, Price, Quantity, Size)
 VALUES
 (1, 1, 85.00, 1, 'Regular'),
@@ -211,3 +203,13 @@ VALUES
 (4, 4, 95.00, 2, 'Regular'),
 (5, 5, 60.00, 1, 'Single'),
 (6, 6, 140.00, 1, '8 pcs');
+
+-- =================================================
+-- COUPONS
+-- =================================================
+INSERT INTO Coupons (UserID, CouponCode, DiscountAmount, DiscountType, ExpiryDate, IsUsed)
+VALUES
+(1, 'SAVE55', 55.00, 'Fixed', '2025-12-05', FALSE),
+(1, 'SAVE40', 40.00, 'Fixed', '2025-12-05', FALSE),
+(1, 'SAVE20', 20.00, 'Fixed', '2025-12-05', FALSE);
+
