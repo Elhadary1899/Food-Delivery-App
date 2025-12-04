@@ -36,3 +36,25 @@ exports.getCartItems = async (userId) => {
 
     return { items, total };
 };
+
+// ============================================
+// CHANGE ITEM'S QUANTITY
+// ============================================
+exports.updateQuantity = async (userId, itemName, restaurantName, size, change) => {
+    const [result] = await db.query(
+        `CALL sp_UpdateCartQuantity(?, ?, ?, ?, ?)`,
+        [userId, itemName, restaurantName, size, change]
+    );
+    return result[0];
+};
+
+// ============================================
+// REMOVE ITEM FROM CART
+// ============================================
+exports.removeItem = async (userId, itemName, restaurantName, size) => {
+    const [result] = await db.query(
+        `CALL sp_RemoveFromCart(?, ?, ?, ?)`,
+        [userId, itemName, restaurantName, size]
+    );
+    return result[0];
+};
