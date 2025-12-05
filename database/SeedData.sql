@@ -120,7 +120,9 @@ VALUES
 (3, 3, 'Mixed Grill Platter', 'Lamb chops, chicken, kofta', 180.00, 'frontend/resources/mix grill.jpg'),
 (4, 4, 'Fried Chicken (6 pcs)', 'Buttermilk marinated & fried', 95.00, 'frontend/resources/fried-chicken-food-png-image-11667430104zzejscquxz.png'),
 (5, 5, 'Chocolate Lava Cake', 'Warm cake with molten center', 60.00, 'frontend/resources/22g242_1200x1200.webp'),
-(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png');
+(6, 6, 'Salmon Roll (8 pcs)', 'Salmon, rice, nori', 140.00, 'frontend/resources/Screenshot-2025-11-21-191851-removebg-preview.png'),
+(5, 1, 'Honey Pancake', 'Fresh pancakes with sweet honey drizzle', 75.00, 'frontend/resources/honey-pancake.jpg'),
+(5, 1, 'Strawberry Cheesecake', 'Classic cheesecake topped with fresh strawberries', 65.00, 'frontend/resources/strawberry-cheesecake.jpg');
 
 -- =================================================
 -- ORDERS (STATIC + TRACKING ORDERS)
@@ -206,7 +208,11 @@ VALUES
 (3, 3, 5, 'Great mixed grill platter, very flavorful.'),
 (4, 4, 4, 'Chicken was crispy but a little salty.'),
 (5, 5, 5, 'Lava cake was gooey and perfect.'),
-(6, 6, 5, 'Fresh salmon rolls, well balanced.');
+(6, 6, 5, 'Fresh salmon rolls, well balanced.'),
+(1, 7, 5, 'Amazing honey pancake!'),
+(2, 7, 4, 'Very tasty and fresh.'),
+(3, 8, 5, 'Best cheesecake I’ve ever had!'),
+(4, 8, 4, 'Great but slightly sweet');
 
 -- =================================================
 -- CART
@@ -240,4 +246,34 @@ INSERT INTO Coupons (UserID, CouponCode, DiscountAmount, DiscountType, ExpiryDat
 VALUES
 (1, 'SAVE55', 55.00, 'Fixed', '2025-12-05', FALSE),
 (1, 'SAVE40', 40.00, 'Fixed', '2025-12-05', FALSE),
-(1, 'SAVE20', 20.00, 'Fixed', '2025-12-05', FALSE);
+(1, 'SAVE20', 20.00, 'Fixed', '2025-12-05', FALSE)(2, 'SAVE20-2', 20.00, 'Fixed', '2025-12-31', FALSE),
+(2, 'OFF10P-2', 10.00, 'Percentage', '2025-12-31', FALSE),(3, 'SAVE20-3', 20.00, 'Fixed', '2025-12-31', FALSE),
+(3, 'OFF10P-3', 10.00, 'Percentage', '2025-12-31', FALSE),(4, 'SAVE20-4', 20.00, 'Fixed', '2025-12-31', FALSE),
+(4, 'OFF10P-4', 10.00, 'Percentage', '2025-12-31', FALSE),(5, 'SAVE20-5', 20.00, 'Fixed', '2025-12-31', FALSE),
+(5, 'OFF10P-5', 10.00, 'Percentage', '2025-12-31', FALSE),(6, 'SAVE20-6', 20.00, 'Fixed', '2025-12-31', FALSE),
+(6, 'OFF10P-6', 10.00, 'Percentage', '2025-12-31', FALSE),(7, 'SAVE20-7', 20.00, 'Fixed', '2025-12-31', FALSE),
+(7, 'OFF10P-7', 10.00, 'Percentage', '2025-12-31', FALSE),(8, 'SAVE20-8', 20.00, 'Fixed', '2025-12-31', FALSE),
+(8, 'OFF10P-8', 10.00, 'Percentage', '2025-12-31', FALSE),(9, 'SAVE20-9', 20.00, 'Fixed', '2025-12-31', FALSE),
+(9, 'OFF10P-9', 10.00, 'Percentage', '2025-12-31', FALSE),
+(10, 'SAVE20-10', 20.00, 'Fixed', '2025-12-31', FALSE),
+(10, 'OFF10P-10', 10.00, 'Percentage', '2025-12-31', FALSE),
+(11, 'SAVE20-11', 20.00, 'Fixed', '2025-12-31', FALSE),
+(11, 'OFF10P-11', 10.00, 'Percentage', '2025-12-31', FALSE),
+(12, 'SAVE20-12', 20.00, 'Fixed', '2025-12-31', FALSE),
+(12, 'OFF10P-12', 10.00, 'Percentage', '2025-12-31', FALSE),
+(13, 'SAVE20-13', 20.00, 'Fixed', '2025-12-31', FALSE),
+(13, 'OFF10P-13', 10.00, 'Percentage', '2025-12-31', FALSE),
+(14, 'SAVE20-14', 20.00, 'Fixed', '2025-12-31', FALSE),
+(14, 'OFF10P-14', 10.00, 'Percentage', '2025-12-31', FALSE),
+(15, 'SAVE20-15', 20.00, 'Fixed', '2025-12-31', FALSE),
+(15, 'OFF10P-15', 10.00, 'Percentage', '2025-12-31', FALSE),
+(16, 'SAVE20-16', 20.00, 'Fixed', '2025-12-31', FALSE),
+(16, 'OFF10P-16', 10.00, 'Percentage', '2025-12-31', FALSE),
+(17, 'SAVE20-17', 20.00, 'Fixed', '2025-12-31', FALSE),
+(17, 'OFF10P-17', 10.00, 'Percentage', '2025-12-31', FALSE),
+(18, 'SAVE20-18', 20.00, 'Fixed', '2025-12-31', FALSE),
+(18, 'OFF10P-18', 10.00, 'Percentage', '2025-12-31', FALSE),
+(19, 'SAVE20-19', 20.00, 'Fixed', '2025-12-31', FALSE),
+(19, 'OFF10P-19', 10.00, 'Percentage', '2025-12-31', FALSE),
+(20, 'SAVE20-20', 20.00, 'Fixed', '2025-12-31', FALSE),
+(20, 'OFF10P-20', 10.00, 'Percentage', '2025-12-31', FALSE);

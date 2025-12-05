@@ -1,6 +1,7 @@
 const authModel = require("../models/authModel");
 const response = require("../utils/response");
 const jwt = require('jsonwebtoken');
+const db = require("../utils/db");
 
 // ============================================
 // CREATE TOKEN (Helper function)
@@ -170,5 +171,22 @@ exports.getMe = async (req, res) => {
 // Logout
 // ============================================
 exports.logout = async (req, res) => {
-    return response.success(res, { message: "Logged out successfully" });
+    try {
+        const token = req.token;
+
+        // Decode token to get expiration
+        const decoded = jwt.decode(token);
+
+        const expiresAt = new Date(decoded.exp * 1000);
+
+        await db.query(
+            `INSERT INTO token_blacklist (token, expires_at)
+             VALUES (?, ?)`,
+            [token, expiresAt]
+        );
+
+        return response.success(res, { message: "Logged out successfully" });
+    } catch (err) {
+        return response.error(res, "Error logging out: " + err.message);
+    }
 };
