@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const trackingController = require("../controllers/trackingController");
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
+
+// Admin: Get all orders
+router.get("/admin/all", protect, authorize("Admin"), trackingController.getAllOrders);
 
 // Cancel an order (must be logged in)
 router.delete("/:orderId/cancel", protect, trackingController.cancelOrder);
