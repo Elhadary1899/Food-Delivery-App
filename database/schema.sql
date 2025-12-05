@@ -14,6 +14,16 @@ CREATE TABLE Users (
 );
 
 -- =================================================
+-- TOKEN BLACKLIST TABLE FOR LOGIN
+-- =================================================
+CREATE TABLE token_blacklist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(500) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =================================================
 -- SHIPPING ADDRESS
 -- =================================================
 CREATE TABLE ShippingAddress (
@@ -135,6 +145,7 @@ CREATE TABLE OrderItems (
     Quantity INT NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
+    FOREIGN KEY (ItemID) REFERENCES FoodItems(ItemID)
 );
 
 -- =================================================
