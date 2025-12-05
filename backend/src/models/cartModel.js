@@ -9,13 +9,13 @@ function normalize(result) {
 // ============================================
 // ADD TO CART
 // ============================================
-exports.addToCart = async (userId, itemName, restaurantName, quantity, size) => {
+exports.addToCart = async (userId, itemId, quantity, size) => {
     const [result] = await db.query(
-        `CALL sp_AddToCart(?, ?, ?, ?, ?)`,
-        [userId, itemName, restaurantName, quantity, size]
+        `CALL sp_AddToCart(?, ?, ?, ?)`,
+        [userId, itemId, quantity, size]
     );
 
-    return normalize(result);
+    return normalize(result)[0];
 };
 
 // ============================================
@@ -40,21 +40,35 @@ exports.getCartItems = async (userId) => {
 // ============================================
 // CHANGE ITEM'S QUANTITY
 // ============================================
-exports.updateQuantity = async (userId, itemName, restaurantName, size, change) => {
+exports.updateQuantity = async (userId, itemId, size, change) => {
     const [result] = await db.query(
-        `CALL sp_UpdateCartQuantity(?, ?, ?, ?, ?)`,
-        [userId, itemName, restaurantName, size, change]
+        `CALL sp_UpdateCartQuantity(?, ?, ?, ?)`,
+        [userId, itemId, size, change]
     );
-    return result[0];
+
+    return normalize(result)[0];
 };
 
 // ============================================
 // REMOVE ITEM FROM CART
 // ============================================
-exports.removeItem = async (userId, itemName, restaurantName, size) => {
+exports.removeItem = async (userId, itemId, size) => {
     const [result] = await db.query(
-        `CALL sp_RemoveFromCart(?, ?, ?, ?)`,
-        [userId, itemName, restaurantName, size]
+        `CALL sp_RemoveFromCart(?, ?, ?)`,
+        [userId, itemId, size]
     );
-    return result[0];
+
+    return normalize(result)[0];
+};
+
+// ============================================
+// CLEAR CART
+// ============================================
+exports.clearCart = async (userId) => {
+    await db.query(
+        `DELETE ci FROM CartItems ci 
+         JOIN Cart c ON ci.CartID = c.CartID 
+         WHERE c.UserID = ?`,
+        [userId]
+    );
 };

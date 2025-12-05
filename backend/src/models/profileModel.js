@@ -7,7 +7,7 @@ function normalize(result) {
 }
 
 // ===================================================
-// GET USER ORDERS (DELIVERED/COMPLETED AND CANCELLED)
+// GET USER ORDERS (DELIVERED AND CANCELLED)
 // ===================================================
 exports.getUserOrders = async (userId, status = null) => {
     let query = `
@@ -19,32 +19,31 @@ exports.getUserOrders = async (userId, status = null) => {
             o.DeliveryFee,
             (o.TotalAccount + o.DeliveryFee) AS grand_total,
             o.OrderStatus,
-            COUNT(oi.OrderItemID) AS item_count,
             sa.Address,
             sa.City,
             sa.Country,
             p.PaymentMethod
         FROM Orders o
-        LEFT JOIN OrderItems oi ON o.OrderID = oi.OrderID
         LEFT JOIN ShippingAddress sa ON o.ShippingAddressID = sa.ShippingAddressID
         LEFT JOIN Payment p ON o.PaymentID = p.PaymentID
         WHERE o.UserID = ?
     `;
-    
+
     const params = [userId];
-    
+
     if (status) {
         query += ` AND o.OrderStatus = ?`;
         params.push(status);
     } else {
-        query += ` AND o.OrderStatus IN ('Completed', 'Delivered', 'Cancelled')`;
+        // Only valid statuses in the new schema
+        query += ` AND o.OrderStatus IN ('Delivered', 'Cancelled')`;
     }
-    
-    query += ` GROUP BY o.OrderID ORDER BY o.OrderDate DESC`;
-    
+
+    query += ` ORDER BY o.OrderDate DESC`;
+
     const [orders] = await db.query(query, params);
 
-    // Fetch items for each order
+    // Fetch items per order
     const ordersWithItems = await Promise.all(
         orders.map(async (order) => {
             const [items] = await db.query(
@@ -79,8 +78,8 @@ exports.getUserOrders = async (userId, status = null) => {
                 delivery_fee: parseFloat(order.DeliveryFee),
                 grand_total: parseFloat(order.grand_total),
                 order_status: order.OrderStatus,
-                payment_method: order.PaymentMethod,  // NEW
-                item_count: order.item_count,
+                payment_method: order.PaymentMethod,
+                item_count: items.length,
                 shipping_address: {
                     address: order.Address,
                     city: order.City,
@@ -108,6 +107,7 @@ exports.getUserAddresses = async (userId) => {
     const [addresses] = await db.query(
         `SELECT 
             ShippingAddressID,
+            AddressName,
             Address,
             PostalCode,
             City,
@@ -120,6 +120,7 @@ exports.getUserAddresses = async (userId) => {
     
     return addresses.map(addr => ({
         address_id: addr.ShippingAddressID,
+        address_name: addr.AddressName,
         address: addr.Address,
         postal_code: addr.PostalCode,
         city: addr.City,
@@ -132,13 +133,14 @@ exports.getUserAddresses = async (userId) => {
 // ===================================================
 exports.addUserAddress = async (userId, data) => {
     const [result] = await db.query(
-        `INSERT INTO ShippingAddress (UserID, Address, PostalCode, City, Country)
-         VALUES (?, ?, ?, ?, ?)`,
-        [userId, data.address, data.postal_code, data.city, data.country]
+        `INSERT INTO ShippingAddress (UserID, AddressName, Address, PostalCode, City, Country)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [userId, data.address_name, data.address, data.postal_code, data.city, data.country]
     );
 
     return {
         address_id: result.insertId,
+        address_name: data.address_name,
         address: data.address,
         postal_code: data.postal_code,
         city: data.city,
@@ -369,9 +371,10 @@ exports.getUserPayments = async (userId) => {
 
     const [rows] = await db.query(
         `SELECT PaymentID AS payment_id,
-                PaymentMethod AS method,
-                CardNumber,
-                DATE_FORMAT(ExpirationDate, '%m/%Y') AS exp
+        PaymentName AS payment_name,
+        PaymentMethod AS method,
+        CardNumber,
+        DATE_FORMAT(ExpirationDate, '%m/%Y') AS exp
         FROM Payment
         WHERE UserID = ?`,
         [userId]
@@ -379,11 +382,13 @@ exports.getUserPayments = async (userId) => {
 
     return rows.map(p => ({
         payment_id: p.payment_id,
+        payment_name: p.payment_name,
         method: p.method,
         last4: p.CardNumber ? p.CardNumber.slice(-4) : null,
         exp: p.exp,
-        brand_icon: getBrandIcon(p.method) // now consistent
+        brand_icon: getBrandIcon(p.method)
     }));
+
 };
 
 function getBrandIcon(method) {
@@ -395,17 +400,15 @@ function getBrandIcon(method) {
 // ADD PAYMENT Method
 // ===================================================
 exports.addPaymentMethod = async (userId, data) => {
-    if (data.method !== "PayPal" && data.method !== "Cash") {
-        if (!data.cardholder || !data.number || !data.exp || !data.cvc) {
-            throw new Error("Card details required for card payments");
-        }
-    }
+    const last4 = data.number ? data.number.slice(-4) : null;
+    const paymentName = `${data.method} ${last4 || ""}`.trim();
 
     const [result] = await db.query(
-        `INSERT INTO Payment (UserID, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO Payment (UserID, PaymentName, PaymentMethod, CardholderName, CardNumber, ExpirationDate, CVC)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
             userId,
+            paymentName,
             data.method,
             data.cardholder || null,
             data.number || null,
@@ -416,10 +419,11 @@ exports.addPaymentMethod = async (userId, data) => {
 
     return {
         payment_id: result.insertId,
+        payment_name: paymentName,
         method: data.method,
-        last4: data.number ? data.number.slice(-4) : null,
-        exp: data.exp ? new Date(data.exp).toISOString().substring(0, 7).replace("-", "/") : null,
-        brand_icon: getBrandIcon(data.method)
+        last4,
+        exp: data.exp,
+        brand_icon: `icons/${data.method}.png`
     };
 };
 

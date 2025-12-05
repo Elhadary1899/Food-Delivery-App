@@ -25,16 +25,17 @@ function createToken(user) {
 // ============================================
 exports.register = async (req, res) => {
     try {
-        const { username, email, password, marketing_opt, role } = req.body;
+        const { username, email, password, phone, marketing_opt, role } = req.body;
 
-        if (!username || !email || !password) {
-            return response.error(res, "Missing required fields", 400);
+        if (!username || !email || !password || !phone) {
+            return response.error(res, "Missing required fields!", 400);
         }
 
         const result = await authModel.registerUser(
             username,
             email,
             password,
+            phone,
             marketing_opt !== undefined ? marketing_opt : true,
             role || 'User'
         );
@@ -43,7 +44,6 @@ exports.register = async (req, res) => {
             return response.error(res, result.message, 400);
         }
 
-        // Generate token
         const token = createToken(result);
 
         return response.success(
@@ -163,4 +163,12 @@ exports.getMe = async (req, res) => {
     } catch (err) {
         return response.error(res, err.message);
     }
+};
+
+
+// ============================================
+// Logout
+// ============================================
+exports.logout = async (req, res) => {
+    return response.success(res, { message: "Logged out successfully" });
 };

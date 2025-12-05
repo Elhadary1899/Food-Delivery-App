@@ -15,7 +15,9 @@ exports.getRestaurants = async () => {
     return result[0].map(r => ({
         restaurant_name: r.RestaurantName,
         rating: r.RestaurantRating,
-        image_url: r.ImageURL
+        image_url: r.imageURL || r.ImageURL || null,
+        address: r.Address || null,
+        restaurant_id: r.RestaurantID || null
     }));
 };
 
@@ -41,51 +43,46 @@ exports.searchRestaurants = async (keyword) => {
 };
 
 // ===================================================
-// GET MENU FOR A SPECIFIC RESTAURANT
+// GET FULL MENU FOR A SPECIFIC RESTAURANT
 // ===================================================
-function normalize(result) {
-    if (!Array.isArray(result)) return result;
-    return Array.isArray(result[0]) ? result[0] : result;
-}
-
 exports.getRestaurantMenu = async (restaurantName) => {
     const decodedName = decodeURIComponent(restaurantName);
 
-    // Fetch categories
+    // -------------------------------
+    // 1) Fetch Categories
+    // -------------------------------
     const [catResult] = await db.query(
         `CALL sp_GetCategoriesByRestaurant(?)`,
         [decodedName]
     );
 
-    // Normalize CALL output
-    const categoriesRaw =
-        Array.isArray(catResult) && Array.isArray(catResult[0])
-            ? catResult[0]
-            : catResult;
+    const categoriesRaw = normalize(catResult);
 
-    // Build category objects with empty items arrays
     const categories = categoriesRaw.map(c => ({
+        category_id: c.CategoryID,
         category_name: c.CategoryName,
         image_url: c.ImageURL,
         items: []
     }));
 
-    // Fetch items
+    // -------------------------------
+    // 2) Fetch Items
+    // -------------------------------
     const [itemResult] = await db.query(
         `CALL sp_GetFoodItemsByRestaurant(?)`,
         [decodedName]
     );
 
-    const itemsRaw =
-        Array.isArray(itemResult) && Array.isArray(itemResult[0])
-            ? itemResult[0]
-            : itemResult;
+    const itemsRaw = normalize(itemResult);
 
-    // Assign items to their categories
     itemsRaw.forEach(item => {
-        const category = categories.find(c => c.category_name === item.CategoryName);
+        const category = categories.find(
+            c => c.category_name === item.CategoryName
+        );
+
         if (category) {
             category.items.push({
+                item_id: item.ItemID || null,
                 item_name: item.ItemName,
                 description: item.ItemDescription,
                 price: item.Price,

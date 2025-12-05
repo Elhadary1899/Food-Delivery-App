@@ -23,8 +23,10 @@ exports.searchRestaurants = async (req, res) => {
 exports.getRestaurantMenu = async (req, res) => {
     try {
         const restaurantName = req.params.restaurantName;
-        const data = await menuModel.getRestaurantMenu(restaurantName);
-        return response.success(res, data);
+
+        const menu = await menuModel.getRestaurantMenu(restaurantName);
+
+        return response.success(res, menu);
     } catch (err) {
         return response.error(res, err.message);
     }

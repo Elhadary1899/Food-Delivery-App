@@ -6,19 +6,12 @@ const response = require("../utils/response");
 // ===================================================
 exports.getUserOrders = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        const userId = req.user.userId;
         const status = req.query.status || null;
-
-        if (!userId || isNaN(userId)) {
-            return response.error(res, "Invalid user ID", 400);
-        }
 
         const orders = await profileModel.getUserOrders(userId, status);
 
-        return response.success(res, {
-            orders: orders
-        });
-
+        return response.success(res, { orders });
     } catch (err) {
         return response.error(res, err.message);
     }
@@ -29,16 +22,11 @@ exports.getUserOrders = async (req, res) => {
 // ===================================================
 exports.getUserAddresses = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
-        
-        if (!userId || isNaN(userId)) {
-            return response.error(res, "Invalid user ID", 400);
-        }
-        
+        const userId = req.user.userId;
+
         const addresses = await profileModel.getUserAddresses(userId);
-        
+
         return response.success(res, { addresses });
-        
     } catch (err) {
         return response.error(res, err.message);
     }
@@ -49,14 +37,15 @@ exports.getUserAddresses = async (req, res) => {
 // ===================================================
 exports.addUserAddress = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
-        const { address, postal_code, city, country } = req.body;
+        const userId = req.user.userId;
+        const { address_name, address, postal_code, city, country } = req.body;
 
-        if (!address || !city || !country) {
-            return response.error(res, "Address, city, and country are required", 400);
+        if (!address_name || !address || !city || !country) {
+            return response.error(res, "Address name, address, city and country are required", 400);
         }
 
         const newAddress = await profileModel.addUserAddress(userId, {
+            address_name,
             address,
             postal_code,
             city,
@@ -75,7 +64,7 @@ exports.addUserAddress = async (req, res) => {
 // ===================================================
 exports.updateUserAddress = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        const userId = req.user.userId;
         const addressId = parseInt(req.params.addressId);
         const { address, postal_code, city, country } = req.body;
 
@@ -84,10 +73,7 @@ exports.updateUserAddress = async (req, res) => {
         }
 
         const updated = await profileModel.updateUserAddress(userId, addressId, {
-            address,
-            postal_code,
-            city,
-            country
+            address, postal_code, city, country
         });
 
         return response.success(res, { updated });
@@ -102,13 +88,12 @@ exports.updateUserAddress = async (req, res) => {
 // ===================================================
 exports.deleteUserAddress = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        const userId = req.user.userId;
         const addressId = parseInt(req.params.addressId);
 
         const result = await profileModel.deleteUserAddress(userId, addressId);
 
         return response.success(res, result);
-
     } catch (err) {
         return response.error(res, err.message);
     }
@@ -119,16 +104,12 @@ exports.deleteUserAddress = async (req, res) => {
 // ===================================================
 exports.getUserAccountDetails = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
-        
-        if (!userId || isNaN(userId)) {
-            return response.error(res, "Invalid user ID", 400);
-        }
-        
+        const userId = req.user.userId;
+
         const accountDetails = await profileModel.getUserAccountDetails(userId);
-        
+
         return response.success(res, { account: accountDetails });
-        
+
     } catch (err) {
         return response.error(res, err.message);
     }
@@ -139,12 +120,8 @@ exports.getUserAccountDetails = async (req, res) => {
 // ===================================================
 exports.updateUserAccountDetails = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        const userId = req.user.userId;
         const { full_name, username, email, phone_number, address, marketing_opt } = req.body;
-        
-        if (!userId || isNaN(userId)) {
-            return response.error(res, "Invalid user ID", 400);
-        }
 
         if (!full_name && !username && !email && phone_number === undefined && !address && marketing_opt === undefined) {
             return response.error(res, "At least one field must be provided for update", 400);
@@ -152,12 +129,6 @@ exports.updateUserAccountDetails = async (req, res) => {
 
         if (email && !email.includes('@gmail.com')) {
             return response.error(res, "Email must be a Gmail address", 400);
-        }
-
-        if (address) {
-            if (!address.address || !address.city || !address.country) {
-                return response.error(res, "Address must include address, city, and country", 400);
-            }
         }
 
         const updateData = {};
@@ -183,7 +154,7 @@ exports.updateUserAccountDetails = async (req, res) => {
 // ===================================================
 exports.getUserCoupons = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+       const userId = req.user.userId;
         
         if (!userId || isNaN(userId)) {
             return response.error(res, "Invalid user ID", 400);
@@ -203,7 +174,7 @@ exports.getUserCoupons = async (req, res) => {
 // ===================================================
 exports.getUserPayments = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
+        const userId = req.user.userId;
 
         const payments = await profileModel.getUserPayments(userId);
 
@@ -219,16 +190,21 @@ exports.getUserPayments = async (req, res) => {
 // ===================================================
 exports.addPaymentMethod = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
-        const { method, cardholder, number, exp, cvc } = req.body;
+        const userId = req.user.userId;
+        const { payment_name, method, cardholder, number, exp, cvc } = req.body;
 
-        if (!method) {
-            return response.error(res, "Payment method is required", 400);
+        if (!payment_name || !method) {
+            return response.error(res, "Payment name and method are required", 400);
         }
 
-        const payment = await profileModel.addPaymentMethod(
-            userId, { method, cardholder, number, exp, cvc }
-        );
+        const payment = await profileModel.addPaymentMethod(userId, {
+            payment_name,
+            method,
+            cardholder,
+            number,
+            exp,
+            cvc
+        });
 
         return response.success(res, { payment });
 
@@ -242,7 +218,8 @@ exports.addPaymentMethod = async (req, res) => {
 // ===================================================
 exports.deletePaymentMethod = async (req, res) => {
     try {
-        const { userId, paymentId } = req.params;
+        const userId = req.user.userId;
+        const paymentId = parseInt(req.params.paymentId);
 
         await profileModel.deletePaymentMethod(userId, paymentId);
 

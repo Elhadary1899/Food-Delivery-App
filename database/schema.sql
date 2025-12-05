@@ -5,7 +5,7 @@ CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
-    PhoneNumber VARCHAR(20) NULL,
+    PhoneNumber VARCHAR(20) NOT NULL,
     password VARCHAR(200) NOT NULL,
     marketing_opt BOOLEAN DEFAULT TRUE,
     role VARCHAR(10) DEFAULT 'User',
@@ -103,6 +103,7 @@ CREATE TABLE FoodItems (
     imageURL VARCHAR(255),
     ItemDescription VARCHAR(255),
     Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (CategoryID) REFERENCES FoodCategory(CategoryID) ON DELETE CASCADE,
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID) ON DELETE CASCADE
 );
 
@@ -117,8 +118,8 @@ CREATE TABLE Orders (
     DeliveryFee DECIMAL(10,2) NOT NULL,
     ShippingAddressID INT NOT NULL,
     PaymentID INT NOT NULL,
-    OrderStatus ENUM('Pending','Being Prepared','On The Way','Delivered','Cancelled')
-        NOT NULL DEFAULT 'Pending',
+    OrderStatus ENUM('Placed','Being Prepared','On The Way','Delivered','Cancelled')
+        NOT NULL DEFAULT 'Placed',
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (ShippingAddressID) REFERENCES ShippingAddress(ShippingAddressID) ON DELETE CASCADE,
     FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID) ON DELETE CASCADE
@@ -142,7 +143,7 @@ CREATE TABLE OrderItems (
 CREATE TABLE OrderStatusHistory (
     HistoryID INT AUTO_INCREMENT PRIMARY KEY,
     OrderID INT NOT NULL,
-    Status ENUM('Placed','Preparing','On The Way','Delivered','Cancelled'),
+    Status ENUM('Placed','Being Prepared','On The Way','Delivered','Cancelled'),
     Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
 );
@@ -178,7 +179,8 @@ CREATE TABLE CartItems (
     Price DECIMAL(10,2) NOT NULL,
     Quantity INT NOT NULL,
     Size VARCHAR(50),
-    FOREIGN KEY (CartID) REFERENCES Cart(CartID) ON DELETE CASCADE
+    FOREIGN KEY (CartID) REFERENCES Cart(CartID) ON DELETE CASCADE,
+    FOREIGN KEY (ItemID) REFERENCES FoodItems(ItemID) ON DELETE CASCADE
 );
 
 -- =================================================

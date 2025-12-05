@@ -6,21 +6,21 @@ const response = require("../utils/response");
 // ============================================
 exports.addToCart = async (req, res) => {
     try {
-        const { user_id, item_name, restaurant_name, quantity, size } = req.body;
+        const userId = req.user.userId;
+        const { item_id, quantity, size } = req.body;
 
-        if (!user_id || !item_name || !restaurant_name || !quantity || !size) {
+        if (!item_id || !quantity || !size) {
             return response.error(res, "Missing required fields", 400);
         }
 
         const result = await cartModel.addToCart(
-            user_id, 
-            item_name, 
-            restaurant_name, 
-            quantity, 
+            userId,
+            item_id,
+            quantity,
             size
         );
 
-        return response.success(res, { message: result[0]?.message || "Updated" });
+        return response.success(res, { message: result.message || "Added to cart" });
 
     } catch (err) {
         return response.error(res, err.message);
@@ -32,11 +32,22 @@ exports.addToCart = async (req, res) => {
 // ============================================
 exports.getCartItems = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        const userId = req.user.userId;
 
-        const data = await cartModel.getCartItems(userId);
+        const { items, total } = await cartModel.getCartItems(userId);
 
-        return response.success(res, data);
+        const itemsTotal = parseFloat(total) || 0;
+
+        const deliveryFee = itemsTotal > 0 ? 5.78 : 0;
+
+        const subtotal = itemsTotal + deliveryFee;
+
+        return response.success(res, {
+            items,
+            items_total: itemsTotal.toFixed(2),
+            delivery_fee: deliveryFee.toFixed(2),
+            subtotal: subtotal.toFixed(2)
+        });
 
     } catch (err) {
         return response.error(res, err.message);
@@ -48,15 +59,10 @@ exports.getCartItems = async (req, res) => {
 // ============================================
 exports.incrementItem = async (req, res) => {
     try {
-        const { user_id, item_name, restaurant_name, size } = req.body;
+        const userId = req.user.userId;
+        const { item_id, size } = req.body;
 
-        const result = await cartModel.updateQuantity(
-            user_id,
-            item_name,
-            restaurant_name,
-            size,
-            +1
-        );
+        const result = await cartModel.updateQuantity(userId, item_id, size, +1);
 
         return response.success(res, result);
     } catch (err) {
@@ -69,15 +75,10 @@ exports.incrementItem = async (req, res) => {
 // ============================================
 exports.decrementItem = async (req, res) => {
     try {
-        const { user_id, item_name, restaurant_name, size } = req.body;
+        const userId = req.user.userId;
+        const { item_id, size } = req.body;
 
-        const result = await cartModel.updateQuantity(
-            user_id,
-            item_name,
-            restaurant_name,
-            size,
-            -1
-        );
+        const result = await cartModel.updateQuantity(userId, item_id, size, -1);
 
         return response.success(res, result);
     } catch (err) {
@@ -90,11 +91,24 @@ exports.decrementItem = async (req, res) => {
 // ============================================
 exports.removeItem = async (req, res) => {
     try {
-        const { user_id, item_name, restaurant_name, size } = req.body;
+        const userId = req.user.userId;
+        const { item_id, size } = req.body;
 
-        const result = await cartModel.removeItem(user_id, item_name, restaurant_name, size);
+        const result = await cartModel.removeItem(userId, item_id, size);
 
         return response.success(res, result);
+    } catch (err) {
+        return response.error(res, err.message);
+    }
+};
+
+// ============================================
+// CLEAR CART
+// ============================================
+exports.clearCart = async (req, res) => {
+    try {
+        await cartModel.clearCart(req.user.userId);
+        return response.success(res, { message: "Cart cleared" });
     } catch (err) {
         return response.error(res, err.message);
     }

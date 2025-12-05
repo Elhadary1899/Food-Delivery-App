@@ -17,23 +17,41 @@ exports.addReview = async (userId, itemName, restaurantName, rating, reviewText)
 };
 
 // ===================================================
-// GET REVIEWS FOR ITEM IN SPECIFIC RESTAURANT
+// GET ITEM REVIEWS (name-based)
 // ===================================================
 exports.getItemReviews = async (itemName, restaurantName) => {
-    const [rows] = await db.query(
+    const [result] = await db.query(
         `CALL sp_GetItemReviewsByName(?, ?)`,
         [itemName, restaurantName]
     );
-    return rows[0];
+
+    return normalize(result).map(r => ({
+        username: r.username,
+        rating: r.Rating,
+        review: r.Review
+    }));
 };
 
 // ===================================================
-// GET AVG RATING + COUNT
+// UPDATE REVIEW
 // ===================================================
-exports.getItemRatingStats = async (itemName, restaurantName) => {
-    const [rows] = await db.query(
-        `CALL sp_GetAverageRatingByName(?, ?)`,
-        [itemName, restaurantName]
+exports.updateReview = async (userId, itemName, restaurantName, rating, reviewText) => {
+    const [result] = await db.query(
+        `CALL sp_UpdateReviewByUserAndItem(?, ?, ?, ?, ?)`,
+        [userId, itemName, restaurantName, rating, reviewText]
     );
-    return rows[0][0];
+
+    return normalize(result)[0];
+};
+
+// ===================================================
+// DELETE REVIEW
+// ===================================================
+exports.deleteReview = async (userId, itemName, restaurantName) => {
+    const [result] = await db.query(
+        `CALL sp_DeleteReviewByUserAndItem(?, ?, ?)`,
+        [userId, itemName, restaurantName]
+    );
+
+    return normalize(result)[0];
 };

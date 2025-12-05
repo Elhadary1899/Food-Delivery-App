@@ -11,4 +11,7 @@ router.post("/admin/login", authController.adminLogin);
 // Protected routes (token required)
 router.get("/me", protect, authController.getMe);
 
+// Logout
+router.post("/logout", authController.logout);
+
 module.exports = router;

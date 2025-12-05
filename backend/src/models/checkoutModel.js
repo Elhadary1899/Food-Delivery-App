@@ -1,5 +1,6 @@
 const db = require("../utils/db");
 
+// Normalize CALL output
 function normalize(result) {
     return Array.isArray(result[0]) ? result[0] : result;
 }
@@ -14,12 +15,9 @@ function normalize(result) {
 // 5. Payment methods
 // ============================================
 exports.getCheckoutSummary = async (userId) => {
-    const [results] = await db.query(
-        `CALL sp_GetCheckoutSummary(?)`,
-        [userId]
-    );
+    const [results] = await db.query(`CALL sp_GetCheckoutSummary(?)`, [userId]);
 
-    // sp_GetCheckoutSummary returns 5 result sets
+    // Procedure returns 5 result sets in exact order:
     return {
         items: results[0] || [],
         totals: results[1] ? results[1][0] : null,
@@ -30,27 +28,28 @@ exports.getCheckoutSummary = async (userId) => {
 };
 
 // ============================================
-// PLACE ORDER
-// Uses OUT parameter to get order number
+// PLACE ORDER (ID-based)
 // ============================================
-exports.placeOrder = async (userId, addressName, paymentName) => {
-    const [results] = await db.query(
+exports.placeOrder = async (userId, addressId, paymentId) => {
+    // Call the stored procedure with OUT param
+    await db.query(
         `CALL sp_PlaceOrder(?, ?, ?, @order_number)`,
-        [userId, addressName, paymentName]
+        [userId, addressId, paymentId]
     );
 
-    // Get the OUT parameter value
+    // Retrieve OUT parameter
     const [outParam] = await db.query(`SELECT @order_number AS order_number`);
 
+    const orderNumber = outParam[0].order_number;
+
     return {
-        order_number: outParam[0].order_number,
-        message: results[0] ? results[0][0]?.message : 'Order placed successfully'
+        order_number: orderNumber,
+        message: orderNumber ? "Order placed successfully" : "Order failed"
     };
 };
 
 // ============================================
 // GET ORDER BY ORDER NUMBER
-// Returns order details and order items
 // ============================================
 exports.getOrderByNumber = async (orderNumber) => {
     const [results] = await db.query(
@@ -58,9 +57,6 @@ exports.getOrderByNumber = async (orderNumber) => {
         [orderNumber]
     );
 
-    // sp_GetOrderByNumber returns 2 result sets:
-    // 1. Order details
-    // 2. Order items
     return {
         order: results[0] ? results[0][0] : null,
         items: results[1] || []

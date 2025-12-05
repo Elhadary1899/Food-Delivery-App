@@ -5,13 +5,22 @@ function normalize(result) {
 }
 
 // Register new user
-exports.registerUser = async (username, email, password, marketingOpt, role) => {
+exports.registerUser = async (username, email, password, phone, marketingOpt, role) => {
     const [result] = await db.query(
-        `CALL sp_RegisterUser(?, ?, ?, ?, ?)`,
-        [username, email, password, marketingOpt, role]
+        `CALL sp_RegisterUser(?, ?, ?, ?, ?, ?)`,
+        [username, email, password, phone, marketingOpt, role]
     );
 
-    return normalize(result)[0];
+    const rows = normalize(result);
+    const r = rows[0];
+
+    return {
+        message: r.message,
+        user_id: r.user_id,
+        username: r.username,
+        email: r.email,
+        role: r.role
+    };
 };
 
 // User login by email

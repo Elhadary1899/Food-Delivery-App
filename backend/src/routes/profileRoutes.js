@@ -1,39 +1,30 @@
 const express = require("express");
 const router = express.Router();
 const profileController = require("../controllers/profileController");
+const { protect, authorize } = require("../middleware/auth");
 
-// Get user orders (delivered/completed and cancelled)
-router.get("/:userId/orders", profileController.getUserOrders);
+// All routes require authentication
+router.use(protect);
 
-// Get user addresses
-router.get("/:userId/addresses", profileController.getUserAddresses);
+// Orders
+router.get("/orders", profileController.getUserOrders);
 
-// Add user addresses
-router.post("/:userId/addresses", profileController.addUserAddress);
+// Addresses
+router.get("/addresses", profileController.getUserAddresses);
+router.post("/addresses", profileController.addUserAddress);
+router.put("/addresses/:addressId", profileController.updateUserAddress);
+router.delete("/addresses/:addressId", profileController.deleteUserAddress);
 
-// Edit user addresses
-router.put("/:userId/addresses/:addressId", profileController.updateUserAddress);
+// Account details
+router.get("/account", profileController.getUserAccountDetails);
+router.post("/account", profileController.updateUserAccountDetails);
 
-// Delete user addresses
-router.delete("/:userId/addresses/:addressId", profileController.deleteUserAddress);
+// Coupons
+router.get("/coupons", profileController.getUserCoupons);
 
-// Get user account details
-router.get("/:userId/account", profileController.getUserAccountDetails);
-
-// Update user account details
-router.post("/:userId/account", profileController.updateUserAccountDetails);
-
-// Get user coupons
-router.get("/:userId/coupons", profileController.getUserCoupons);
-
-// Get user payments
-router.get("/:userId/payments", profileController.getUserPayments);
-
-// Add user payments
-router.post("/:userId/payments", profileController.addPaymentMethod);
-
-// Delete user payments
-router.delete("/:userId/payments/:paymentId", profileController.deletePaymentMethod);
-
+// Payments
+router.get("/payments", profileController.getUserPayments);
+router.post("/payments", profileController.addPaymentMethod);
+router.delete("/payments/:paymentId", profileController.deletePaymentMethod);
 
 module.exports = router;
