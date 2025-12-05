@@ -184,16 +184,16 @@ INSERT INTO OrderStatusHistory (OrderID, Status, Timestamp)
 VALUES
 (21, 'Placed', NOW()),
 (22, 'Placed', DATE_SUB(NOW(), INTERVAL 40 SECOND)),
-(22, 'Preparing', DATE_SUB(NOW(), INTERVAL 35 SECOND)),
+(22, 'Being Prepared', DATE_SUB(NOW(), INTERVAL 35 SECOND)),
 (23, 'Placed', DATE_SUB(NOW(), INTERVAL 90 SECOND)),
-(23, 'Preparing', DATE_SUB(NOW(), INTERVAL 80 SECOND)),
+(23, 'Being Prepared', DATE_SUB(NOW(), INTERVAL 80 SECOND)),
 (23, 'On The Way', DATE_SUB(NOW(), INTERVAL 70 SECOND)),
 (24, 'Placed', DATE_SUB(NOW(), INTERVAL 3 HOUR)),
-(24, 'Preparing', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
+(24, 'Being Prepared', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
 (24, 'On The Way', DATE_SUB(NOW(), INTERVAL 110 MINUTE)),
 (24, 'Delivered', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
 (25, 'Placed', DATE_SUB(NOW(), INTERVAL 1 DAY)),
-(25, 'Preparing', DATE_SUB(NOW(), INTERVAL 23 HOUR)),
+(25, 'Being Prepared', DATE_SUB(NOW(), INTERVAL 23 HOUR)),
 (25, 'Cancelled', DATE_SUB(NOW(), INTERVAL 22 HOUR));
 
 -- =================================================
