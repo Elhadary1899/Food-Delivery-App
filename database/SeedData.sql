@@ -108,7 +108,7 @@ VALUES
 ("Little E's", 4.3, '10 Freedom Road, Cairo', 'frontend/resources/little.jpg'),
 ('5 Roosters', 4.6, '19 Lotus Compound, Cairo', 'frontend/resources/5%20roosters.jpg'),
 ('Coff', 4.2, '9 Lotus Compound, Cairo', 'frontend/resources/coff.jpg?raw=true'),
-('The Wok Restaurant', 4.4, '88 Tahrir Square, Giza', 'https://ibb.co/mrTqphqq');
+('The Wok Restaurant', 4.4, '88 Tahrir Square, Giza', 'frontend/resources/IMG-8654.jpg?raw=true');
 
 -- =================================================
 -- FOOD ITEMS
