@@ -45,40 +45,43 @@ It includes:
 ---
 
 ## 📂 Project Structure
+
+```text
 FoodDeliveryApp/
 │
 ├── backend/
-│ ├── server.js
-│ ├── src/
-│ │ ├── controllers/
-│ │ ├── routes/
-│ │ ├── models/
-│ │ ├── middleware/
-│ │ ├── jobs/
-│ │ └── utils/
+│   ├── server.js
+│   └── src/
+│       ├── controllers/
+│       ├── routes/
+│       ├── models/
+│       ├── middleware/
+│       ├── jobs/
+│       └── utils/
 │
 ├── frontend/
-│ ├── src/
-│ │ ├── Components/
-│ │ ├── Home/
-│ │ ├── Menu/
-│ │ ├── cart/
-│ │ ├── auth/
-│ │ ├── profilepage/
-│ │ ├── AdminPanel/
-│ │ ├── context/
-│ │ └── services/
-│ ├── public/
-│ └── vite.config.js
+│   ├── src/
+│   │   ├── Components/
+│   │   ├── Home/
+│   │   ├── Menu/
+│   │   ├── cart/
+│   │   ├── auth/
+│   │   ├── profilepage/
+│   │   ├── AdminPanel/
+│   │   ├── context/
+│   │   └── services/
+│   ├── public/
+│   └── vite.config.js
 │
 ├── database/
-│ ├── ERD.pdf
-│ ├── schema.sql
-│ ├── procedures.sql
-│ ├── indexing.sql
-│ └── SeedData.sql
+│   ├── ERD.pdf
+│   ├── schema.sql
+│   ├── procedures.sql
+│   ├── indexing.sql
+│   └── SeedData.sql
 │
 └── README.md
+```
 
 ---
 
@@ -160,3 +163,4 @@ This project was developed as part of a university Web Programming course, focus
 - RESTful APIs
 - Database design
 - Clean architecture and separation of concerns
+
