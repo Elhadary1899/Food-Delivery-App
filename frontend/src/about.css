@@ -1,0 +1,175 @@
+/* ============================================================
+   GENERAL PAGE STYLE
+============================================================ */
+.about-page {
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  color: #81a4a6;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   HERO SECTION
+============================================================ */
+.about-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 110px 160px;
+  background: #81a4a6;
+  color: #ffffff;
+}
+
+.hero-text h1 {
+  font-size: 62px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0;
+}
+
+.custom-logo {
+  color: #f4bd7b;
+  font-size: 68px;
+  font-weight: 900;
+}
+
+.hero-img img {
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ============================================================
+   UNIVERSAL SECTIONS
+============================================================ */
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 160px;
+  gap: 60px;
+  position: relative;
+}
+
+/************* TEXT *************/
+.text-box {
+  width: 50%;
+}
+
+.text-box h2 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #264a3f;
+}
+
+.brand {
+  color: #f4bd7b;
+}
+
+.text-box p {
+  font-size: 17px;
+  line-height: 1.9;
+  color: #555;
+  max-width: 580px;
+}
+
+/************* IMAGE AREA (GLOBAL FOR ALL) *************/
+.img-box {
+  width: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blob-bg1 {
+  position: absolute;
+  z-index: 1;
+  width: 430px;
+  height: 430px;
+  object-fit: contain;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+}
+
+.blob-bg2 {
+  position: absolute;
+  z-index: 1;
+  width: 430px;
+  height: 430px;
+  object-fit: contain;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -65%);
+}
+
+.blob-bg {
+  position: absolute;
+  z-index: 1;
+  width: 430px;
+  height: 430px;
+  object-fit: contain;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+}
+
+.main-img {
+  position: relative;
+  z-index: 2;
+  width: 350px;
+  transform: translateY(-70px);
+  border-radius: 60%;
+  object-fit: contain;
+}
+
+.contact-icons {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.contact-icons p {
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #264a3f;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .about-hero,
+  .section {
+    flex-direction: column;
+    text-align: center;
+    padding: 70px 30px;
+  }
+
+  .hero-img img {
+    width: 300px;
+    height: 300px;
+  }
+
+  .text-box,
+  .img-box {
+    width: 100%;
+  }
+
+  .main-img {
+    width: 240px;
+  }
+
+  .blob-bg {
+    width: 280px;
+    height: 280px;
+  }
+
+  .text-box p {
+    max-width: 100%;
+  }
+}
